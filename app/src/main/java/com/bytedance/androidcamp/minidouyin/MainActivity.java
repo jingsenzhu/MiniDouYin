@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.Animator;
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -31,12 +32,19 @@ public class MainActivity extends AppCompatActivity {
             Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f);
 
+    private ActionBar mactionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        if (getSupportActionBar() != null)
 //            getSupportActionBar().hide();
         setContentView(R.layout.layout_loading);
+        mactionBar = getActionBar();
+        if (mactionBar != null){
+            mactionBar.hide();
+        }
+
         LottieAnimationView animationView = findViewById(R.id.lav_loading);
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
