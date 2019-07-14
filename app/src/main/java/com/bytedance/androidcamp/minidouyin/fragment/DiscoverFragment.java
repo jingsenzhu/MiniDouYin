@@ -1,6 +1,7 @@
 package com.bytedance.androidcamp.minidouyin.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
+import com.bytedance.androidcamp.minidouyin.activity.UserActivity;
 import com.bytedance.androidcamp.minidouyin.model.GetVideosResponse;
 import com.bytedance.androidcamp.minidouyin.model.IMiniDouyinService;
 import com.bytedance.androidcamp.minidouyin.model.Video;
@@ -46,6 +49,8 @@ public class DiscoverFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
 
+    private String userName = null;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,8 +75,24 @@ public class DiscoverFragment extends Fragment {
                 return mVideos.size();
             }
         });
-        fetchFeed();
         return mView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (userName == null)
+            fetchFeed();
+        else
+            fetchFeed(userName);
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     static class CardViewHolder extends RecyclerView.ViewHolder {
@@ -79,6 +100,7 @@ public class DiscoverFragment extends Fragment {
         public ImageView mImage;
         public TextView mAuthorTextView;
         public TextView mTimeTextView;
+        private Context mContext = null;
 
         public CardViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,12 +111,23 @@ public class DiscoverFragment extends Fragment {
 
         static public CardViewHolder create(Context context, ViewGroup root) {
             View v = LayoutInflater.from(context).inflate(R.layout.layout_recycler_item, root, false);
-            return new CardViewHolder(v);
+            CardViewHolder viewHolder = new CardViewHolder(v);
+            viewHolder.mContext = context;
+            return viewHolder;
         }
 
-        public void bind(@NonNull Video video) {
+        public void bind(@NonNull final Video video) {
             mTimeTextView.setText(video.getDate());
             mAuthorTextView.setText(video.getUserName());
+            mAuthorTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mContext, UserActivity.class);
+                    intent.putExtra("username", video.getUserName());
+                    intent.putExtra("id", video.getStudentId());
+                    mContext.startActivity(intent);
+                }
+            });
             Glide.with(mImage.getContext()).load(video.getImageUrl()).into(mImage);
         }
     }
@@ -123,6 +156,30 @@ public class DiscoverFragment extends Fragment {
                 if (getActivity().findViewById(R.id.fab_ref).getAnimation() != null) {
                     getActivity().findViewById(R.id.fab_ref).getAnimation().setRepeatCount(2);
                 }
+                throwable.printStackTrace();
+                Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void fetchFeed(final String userName) {
+        miniDouyinService.getVideos().enqueue(new Callback<GetVideosResponse>() {
+            @Override
+            public void onResponse(Call<GetVideosResponse> call, Response<GetVideosResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    GetVideosResponse getVideosResponse = response.body();
+                    if (getVideosResponse.isSuccess()) {
+                        mVideos = getVideosResponse.getUserVideos(userName);
+                        mRecyclerView.getAdapter().notifyDataSetChanged();
+//                        Toast.makeText(getContext(), "Refresh success!", Toast.LENGTH_SHORT).show();
+                    } else
+                        Toast.makeText(getContext(), "Refresh fail!", Toast.LENGTH_LONG).show();
+                } else
+                    Toast.makeText(getContext(), "Refresh fail!", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<GetVideosResponse> call, Throwable throwable) {
                 throwable.printStackTrace();
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
             }
