@@ -6,12 +6,12 @@
     android:viewportWidth="100">
     <path
         android:name="hor"
-        android:strokeColor="@android:color/background_light"
+        android:strokeColor="#ffffffff"
         android:strokeWidth="8"
         android:pathData="M10,50 L90,50" />
     <path
         android:name="ver"
-        android:strokeColor="@android:color/background_light"
+        android:strokeColor="#ffffffff"
         android:strokeWidth="8"
         android:pathData="M50,10 L50,90" />
 </vector>
