@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f);
 
-    private ActionBar mactionBar;
+    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
 //        if (getSupportActionBar() != null)
 //            getSupportActionBar().hide();
         setContentView(R.layout.layout_loading);
-        mactionBar = getActionBar();
-        if (mactionBar != null){
-            mactionBar.hide();
+        mActionBar = getActionBar();
+        if (mActionBar != null){
+            mActionBar.hide();
         }
 
         LottieAnimationView animationView = findViewById(R.id.lav_loading);

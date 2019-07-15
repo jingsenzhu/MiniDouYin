@@ -3,3 +3,5 @@
 local.properties
 *.log
 MiniDouYin.iml
+*.iml
+.DS_Store
