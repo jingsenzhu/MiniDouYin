@@ -9,6 +9,14 @@ public class Video {
     @SerializedName("image_url") private String imageUrl;
     @SerializedName("video_url") private String videoUrl;
     @SerializedName("createdAt") private String time;
+    @SerializedName("image_w")   private int imageWidth;
+    @SerializedName("image_h")   private int imageHeight;
+
+    public int getImageWidth(){return imageWidth;}
+    public void setImageWidth(int imageWidth){this.imageWidth = imageWidth;}
+
+    public  int getImageHeight(){return imageHeight;}
+    public  void setImageHeight(int imageHeight){this.imageHeight = imageHeight;}
 
     public String getStudentId() {
         return studentId;

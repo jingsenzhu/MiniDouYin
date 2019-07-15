@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -56,6 +57,7 @@ public class DiscoverFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View mView = inflater.inflate(R.layout.fragment_discover, container, false);
         mRecyclerView = mView.findViewById(R.id.rv_find);
+        /* 设定瀑布流layout */
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 //        mRecyclerView.setLayoutManager(new LinearLayoutManager(mView.getContext()));
         mRecyclerView.setAdapter(new RecyclerView.Adapter() {
@@ -129,7 +131,15 @@ public class DiscoverFragment extends Fragment {
                 }
             });
             Glide.with(mImage.getContext()).load(video.getImageUrl()).into(mImage);
+//            ConstraintLayout.LayoutParams layputParams =
+//                    (ConstraintLayout.LayoutParams)this.mImage.getLayoutParams();
+//            float imageW = video.getImageWidth();
+//            float scale = (float) layputParams.width / imageW;
+//            layputParams.height = (int)(scale * video.getImageHeight());
+//            this.mImage.setLayoutParams(layputParams);
         }
+
+
     }
 
     public void fetchFeed() {
