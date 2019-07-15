@@ -13,9 +13,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.menu.MenuView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.bytedance.androidcamp.minidouyin.MainActivity;
@@ -49,6 +51,8 @@ public class DiscoverFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     private String userName = null;
 
     @Nullable
@@ -75,6 +79,7 @@ public class DiscoverFragment extends Fragment {
                 return mVideos.size();
             }
         });
+        mSwipeRefreshLayout = mView.findViewById(R.id.srl_discover);
         return mView;
     }
 
@@ -85,6 +90,16 @@ public class DiscoverFragment extends Fragment {
             fetchFeed();
         else
             fetchFeed(userName);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (userName == null)
+                    fetchFeed();
+                else
+                    fetchFeed(userName);
+            }
+        });
     }
 
     public String getUserName() {
@@ -139,6 +154,7 @@ public class DiscoverFragment extends Fragment {
                 if (getActivity().findViewById(R.id.fab_ref).getAnimation() != null) {
                     getActivity().findViewById(R.id.fab_ref).getAnimation().setRepeatCount(2);
                 }
+                mSwipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     GetVideosResponse getVideosResponse = response.body();
                     if (getVideosResponse.isSuccess()) {
@@ -156,6 +172,7 @@ public class DiscoverFragment extends Fragment {
                 if (getActivity().findViewById(R.id.fab_ref).getAnimation() != null) {
                     getActivity().findViewById(R.id.fab_ref).getAnimation().setRepeatCount(2);
                 }
+                mSwipeRefreshLayout.setRefreshing(false);
                 throwable.printStackTrace();
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -166,6 +183,7 @@ public class DiscoverFragment extends Fragment {
         miniDouyinService.getVideos().enqueue(new Callback<GetVideosResponse>() {
             @Override
             public void onResponse(Call<GetVideosResponse> call, Response<GetVideosResponse> response) {
+                mSwipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     GetVideosResponse getVideosResponse = response.body();
                     if (getVideosResponse.isSuccess()) {
@@ -180,6 +198,7 @@ public class DiscoverFragment extends Fragment {
 
             @Override
             public void onFailure(Call<GetVideosResponse> call, Throwable throwable) {
+                mSwipeRefreshLayout.setRefreshing(false);
                 throwable.printStackTrace();
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
             }
