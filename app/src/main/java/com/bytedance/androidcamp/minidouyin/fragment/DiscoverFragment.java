@@ -21,6 +21,9 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
+import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
 import com.bytedance.androidcamp.minidouyin.activity.UserActivity;
@@ -160,10 +163,17 @@ public class DiscoverFragment extends Fragment {
             float scale =  viewWidth / imageW;
             layputParams.height = (int)(scale * video.getImageHeight());
             this.mImage.setLayoutParams(layputParams);
+            GlideBuilder builder = new GlideBuilder(mImage.getContext());
+
+            int diskSizeInBytes = 1024 * 1024 * 100;
+            int memorySizeInBytes = 1024 * 1024 * 60;
+            builder.setDiskCache(new InternalCacheDiskCacheFactory(mImage.getContext(),diskSizeInBytes));
+            builder.setMemoryCache(new LruResourceCache(memorySizeInBytes));
             Glide.with(mImage.getContext())
                     .load(video.getImageUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)//采用了缓存策略
                     .into(mImage);
+
         }
 
     }
