@@ -27,6 +27,7 @@ import com.bytedance.androidcamp.minidouyin.activity.UserActivity;
 import com.bytedance.androidcamp.minidouyin.model.GetVideosResponse;
 import com.bytedance.androidcamp.minidouyin.model.IMiniDouyinService;
 import com.bytedance.androidcamp.minidouyin.model.Video;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class DiscoverFragment extends Fragment {
 
     private List<Video> mVideos = new ArrayList<>();
 
+
     public final String BASE_URL = "http://test.androidcamp.bytedance.com/mini_douyin/invoke/";
 
     private Retrofit retrofit = new Retrofit.Builder()
@@ -56,9 +58,12 @@ public class DiscoverFragment extends Fragment {
 
     private String userName = null;
 
+    private int mFullWidth;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mFullWidth = this.getResources().getDisplayMetrics().widthPixels;
         final View mView = inflater.inflate(R.layout.fragment_discover, container, false);
         mRecyclerView = mView.findViewById(R.id.rv_find);
         /* 设定瀑布流layout */
@@ -73,7 +78,7 @@ public class DiscoverFragment extends Fragment {
 
             @Override
             public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-                ((CardViewHolder)holder).bind(mVideos.get(position));
+                ((CardViewHolder)holder).bind(mVideos.get(position),mFullWidth);
             }
 
             @Override
@@ -133,7 +138,7 @@ public class DiscoverFragment extends Fragment {
             return viewHolder;
         }
 
-        public void bind(@NonNull final Video video) {
+        public void bind(@NonNull final Video video, int FullWidth) {
             mTimeTextView.setText(video.getDate());
             mAuthorTextView.setText(video.getUserName());
             mAuthorTextView.setOnClickListener(new View.OnClickListener() {
@@ -145,15 +150,20 @@ public class DiscoverFragment extends Fragment {
                     mContext.startActivity(intent);
                 }
             });
-            Glide.with(mImage.getContext()).load(video.getImageUrl()).into(mImage);
-//            ConstraintLayout.LayoutParams layputParams =
-//                    (ConstraintLayout.LayoutParams)this.mImage.getLayoutParams();
-//            float imageW = video.getImageWidth();
-//            float scale = (float) layputParams.width / imageW;
-//            layputParams.height = (int)(scale * video.getImageHeight());
-//            this.mImage.setLayoutParams(layputParams);
-        }
+            int paddingWidth = 35;
 
+            ConstraintLayout.LayoutParams layputParams =
+                    (ConstraintLayout.LayoutParams)this.mImage.getLayoutParams();
+            float imageW = video.getImageWidth();
+            float viewWidth = (FullWidth - (paddingWidth * 3)) / 2;
+            layputParams.width = (int)viewWidth;
+            float scale =  viewWidth / imageW;
+            layputParams.height = (int)(scale * video.getImageHeight());
+            this.mImage.setLayoutParams(layputParams);
+            Glide.with(mImage.getContext())
+                    .load(video.getImageUrl())
+                    .into(mImage);
+        }
 
     }
 

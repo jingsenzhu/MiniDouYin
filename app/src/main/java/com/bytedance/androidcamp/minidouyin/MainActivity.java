@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBar mActionBar;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.setContentView(R.layout.activity_main);
                 initBtns();
                 initTab();
+
             }
             @Override
             public void onAnimationStart(Animator animator) {}
