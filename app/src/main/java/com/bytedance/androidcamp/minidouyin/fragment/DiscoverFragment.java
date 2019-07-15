@@ -150,7 +150,7 @@ public class DiscoverFragment extends Fragment {
                     mContext.startActivity(intent);
                 }
             });
-            int paddingWidth = 35;
+            int paddingWidth = 40;
 
             ConstraintLayout.LayoutParams layputParams =
                     (ConstraintLayout.LayoutParams)this.mImage.getLayoutParams();
@@ -162,6 +162,7 @@ public class DiscoverFragment extends Fragment {
             this.mImage.setLayoutParams(layputParams);
             Glide.with(mImage.getContext())
                     .load(video.getImageUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)//采用了缓存策略
                     .into(mImage);
         }
 
