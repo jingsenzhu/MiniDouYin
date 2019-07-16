@@ -9,6 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.animation.Animator;
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,6 +17,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBar mActionBar;
 
+    private FloatingActionButton maddButton;
 
 
     @Override
@@ -77,6 +80,16 @@ public class MainActivity extends AppCompatActivity {
                 fragments.get(mViewPager.getCurrentItem()).fetchFeed();
             }
         });
+
+        // 增加点击按钮拍照逻辑
+         maddButton = findViewById(R.id.fab_add);
+         maddButton.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                 startActivity(intent);
+             }
+         });
     }
 
     private void initTab() {

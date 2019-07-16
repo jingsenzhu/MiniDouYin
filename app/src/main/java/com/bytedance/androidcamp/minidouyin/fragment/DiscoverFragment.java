@@ -155,7 +155,7 @@ public class DiscoverFragment extends Fragment {
             ConstraintLayout.LayoutParams layputParams =
                     (ConstraintLayout.LayoutParams)this.mImage.getLayoutParams();
             float imageW = video.getImageWidth();
-            float viewWidth = (FullWidth - (paddingWidth * 3)) / 2;
+            float viewWidth = (FullWidth - (paddingWidth * 3)) / 2.0f;
             layputParams.width = (int)viewWidth;
             float scale =  viewWidth / imageW;
             layputParams.height = (int)(scale * video.getImageHeight());

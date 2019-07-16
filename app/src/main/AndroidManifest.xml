@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.bytedance.androidcamp.minidouyin">
 
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="true" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/> <!-- 如果仍然有权限问题，手动去设置里面开启权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -26,6 +30,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.UserActivity" />
+        <activity android:name=".activity.CameraActivity"/>
     </application>
 
 </manifest>
