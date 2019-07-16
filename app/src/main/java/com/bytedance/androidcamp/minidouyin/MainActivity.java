@@ -9,15 +9,15 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.animation.Animator;
 import android.app.ActionBar;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.bytedance.androidcamp.minidouyin.fragment.FollowFragment;
+import com.bytedance.androidcamp.minidouyin.fragment.RemindFragment;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -25,16 +25,14 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<DiscoverFragment> fragments = new ArrayList<>();
+    private List<Fragment> fragments = new ArrayList<>();
     private ViewPager mViewPager;
-
-    private RotateAnimation mRotateAnimation = new RotateAnimation(0, 360,
-            Animation.RELATIVE_TO_SELF, 0.5f,
-            Animation.RELATIVE_TO_SELF, 0.5f);
 
     private ActionBar mActionBar;
 
-
+    private boolean hasLogin;
+    private String loginName;
+    private String loginID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animator) {
                 MainActivity.this.setContentView(R.layout.activity_main);
+                checkLogin();
                 initBtns();
                 initTab();
-
             }
             @Override
             public void onAnimationStart(Animator animator) {}
@@ -65,26 +63,57 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        SharedPreferences preferences = getSharedPreferences(
+                getResources().getString(R.string.login_pref_name), MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("has_login", hasLogin);
+        editor.putString("login_name", loginName);
+        editor.putString("login_id", loginID);
+        editor.apply();
+        super.onDestroy();
+    }
+
+    private void checkLogin() {
+        SharedPreferences preferences = getSharedPreferences(
+                getString(R.string.login_pref_name), MODE_PRIVATE);
+        hasLogin = preferences.getBoolean("has_login", false);
+        if (hasLogin) {
+            loginName = preferences.getString("login_name", "");
+            loginID = preferences.getString("login_id", "");
+        }
+    }
+
     private void initBtns() {
-        FloatingActionButton refreshButton = findViewById(R.id.fab_ref);
-        mRotateAnimation.setInterpolator(new LinearInterpolator());
-        mRotateAnimation.setDuration(200);
-        mRotateAnimation.setRepeatCount(Animation.INFINITE);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.startAnimation(mRotateAnimation);
-                fragments.get(mViewPager.getCurrentItem()).fetchFeed();
-            }
-        });
+
     }
 
     private void initTab() {
         fragments.add(new DiscoverFragment());
         fragments.add(new DiscoverFragment());
-        fragments.add(new DiscoverFragment());
-        fragments.add(new DiscoverFragment());
+        if (!hasLogin) {
+            fragments.add(new RemindFragment());
+            fragments.add(new RemindFragment());
+        } else {
+            fragments.add(new FollowFragment());
+            fragments.add(new FollowFragment());
+        }
         mViewPager = findViewById(R.id.vp_main);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position > 1 && !hasLogin) {
+                    Toast.makeText(MainActivity.this, "需要登录", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) { }
+        });
         TabLayout mTabLayout = findViewById(R.id.tl_main);
         mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -98,13 +127,13 @@ public class MainActivity extends AppCompatActivity {
                 String title;
                 switch (position) {
                     case 0:
-                        title = "发现";
+                        title = "推荐";
                         break;
                     case 1:
-                        title = "关注";
+                        title = "发现";
                         break;
                     case 2:
-                        title = "消息";
+                        title = "关注";
                         break;
                     default:
                         title = "我";
