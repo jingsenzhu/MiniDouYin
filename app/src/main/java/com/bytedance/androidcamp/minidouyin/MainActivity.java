@@ -10,15 +10,20 @@ import androidx.viewpager.widget.ViewPager;
 import android.animation.Animator;
 import android.app.ActionBar;
 import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
+import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
+import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
+import com.bytedance.androidcamp.minidouyin.activity.VideoActivity;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.FollowFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.RemindFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasLogin;
     private String loginName;
     private String loginID;
+    private FloatingActionButton maddButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initBtns() {
+
+
+        // 增加点击按钮拍照逻辑
+        maddButton = findViewById(R.id.fab_add);
+        maddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, VideoActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
     @Override
     protected void onDestroy() {
         SharedPreferences preferences = getSharedPreferences(
@@ -75,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void checkLogin() {
+    private void checkLogin( ) {
         SharedPreferences preferences = getSharedPreferences(
                 getString(R.string.login_pref_name), MODE_PRIVATE);
         hasLogin = preferences.getBoolean("has_login", false);
@@ -83,10 +104,6 @@ public class MainActivity extends AppCompatActivity {
             loginName = preferences.getString("login_name", "");
             loginID = preferences.getString("login_id", "");
         }
-    }
-
-    private void initBtns() {
-
     }
 
     private void initTab() {
