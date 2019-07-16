@@ -23,20 +23,10 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/fab_ref"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="40dp"
-        android:src="@drawable/ic_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_ref"
-        app:layout_constraintStart_toEndOf="@id/fab_add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="40dp"
-        android:src="@android:drawable/ic_menu_rotate"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

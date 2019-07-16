@@ -182,9 +182,6 @@ public class DiscoverFragment extends Fragment {
         miniDouyinService.getVideos().enqueue(new Callback<GetVideosResponse>() {
             @Override
             public void onResponse(Call<GetVideosResponse> call, Response<GetVideosResponse> response) {
-                if (getActivity().findViewById(R.id.fab_ref).getAnimation() != null) {
-                    getActivity().findViewById(R.id.fab_ref).getAnimation().setRepeatCount(2);
-                }
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     GetVideosResponse getVideosResponse = response.body();
@@ -200,9 +197,6 @@ public class DiscoverFragment extends Fragment {
 
             @Override
             public void onFailure(Call<GetVideosResponse> call, Throwable throwable) {
-                if (getActivity().findViewById(R.id.fab_ref).getAnimation() != null) {
-                    getActivity().findViewById(R.id.fab_ref).getAnimation().setRepeatCount(2);
-                }
                 mSwipeRefreshLayout.setRefreshing(false);
                 throwable.printStackTrace();
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
