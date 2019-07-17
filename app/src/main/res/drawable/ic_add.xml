@@ -8,10 +8,12 @@
         android:name="hor"
         android:strokeColor="#ffffffff"
         android:strokeWidth="8"
+        android:strokeLineCap="round"
         android:pathData="M20,50 L80,50" />
     <path
         android:name="ver"
         android:strokeColor="#ffffffff"
         android:strokeWidth="8"
+        android:strokeLineCap="round"
         android:pathData="M50,20 L50,80" />
 </vector>

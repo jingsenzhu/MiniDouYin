@@ -31,11 +31,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.UserActivity" />
-        <activity android:name=".activity.CameraActivity"/>
-        <activity android:name=".activity.VideoActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="portrait" /> <!-- or android:screenOrientation="landscape"-->
-
+        <activity android:name=".activity.LoginActivity" android:theme="@style/myTransparent" />
     </application>
 
 </manifest>

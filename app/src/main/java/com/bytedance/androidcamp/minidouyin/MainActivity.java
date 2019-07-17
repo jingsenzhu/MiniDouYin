@@ -4,13 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.Animator;
 import android.app.ActionBar;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -18,10 +23,14 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
 import com.bytedance.androidcamp.minidouyin.activity.VideoActivity;
+import com.bytedance.androidcamp.minidouyin.activity.LoginActivity;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.FollowFragment;
+import com.bytedance.androidcamp.minidouyin.fragment.MeFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.RemindFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.bytedance.androidcamp.minidouyin.utils.DepthPageTransformer;
+import com.bytedance.androidcamp.minidouyin.utils.ZoomOutPageTransformer;
 import com.google.android.material.tabs.TabLayout;
 
 
@@ -29,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final int LOGIN_REQUEST_CODE = 6342;
 
     private List<Fragment> fragments = new ArrayList<>();
     private ViewPager mViewPager;
@@ -70,20 +81,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initBtns() {
-
-
-        // 增加点击按钮拍照逻辑
-        maddButton = findViewById(R.id.fab_add);
-        maddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, VideoActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
     @Override
     protected void onDestroy() {
         SharedPreferences preferences = getSharedPreferences(
@@ -96,13 +93,112 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void checkLogin( ) {
+//<<<<<<< Updated upstream
+//    private void checkLogin( ) {
+//=======
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LOGIN_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            loginName = data.getStringExtra("user_name");
+            loginID = data.getStringExtra("user_id");
+            if (loginName != null && loginID != null) {
+                hasLogin = true;
+                Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                fragments.remove(3);
+                fragments.remove(2);
+                fragments.add(new FollowFragment());
+                fragments.add(new MeFragment());
+                mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
+                mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        }
+    }
+
+    private void checkLogin() {
         SharedPreferences preferences = getSharedPreferences(
                 getString(R.string.login_pref_name), MODE_PRIVATE);
         hasLogin = preferences.getBoolean("has_login", false);
         if (hasLogin) {
             loginName = preferences.getString("login_name", "");
             loginID = preferences.getString("login_id", "");
+        }
+    }
+
+    public void login() {
+        if (!hasLogin) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                startActivityForResult(new Intent(MainActivity.this, LoginActivity.class),
+                        MainActivity.LOGIN_REQUEST_CODE);
+            } else {
+                startActivityForResult(new Intent(MainActivity.this, LoginActivity.class),
+                        MainActivity.LOGIN_REQUEST_CODE, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+            }
+        }
+    }
+
+    public void logout() {
+        if (!hasLogin)
+            return;
+        hasLogin = false;
+        loginID = null;
+        loginName = null;
+        fragments.remove(3);
+        fragments.remove(2);
+        fragments.add(new RemindFragment());
+        fragments.add(new RemindFragment());
+        mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
+        mViewPager.getAdapter().notifyDataSetChanged();
+    }
+
+    private void initBtns() {
+        findViewById(R.id.fab_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!hasLogin) {
+                    login();
+                } else {
+                    return;
+                }
+            }
+        });
+    }
+
+    class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
+
+        public MyFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            String title;
+            switch (position) {
+                case 0:
+                    title = "推荐";
+                    break;
+                case 1:
+                    title = "发现";
+                    break;
+                case 2:
+                    title = "关注";
+                    break;
+                default:
+                    title = "我";
+                    break;
+            }
+            return title;
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
         }
     }
 
@@ -114,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
             fragments.add(new RemindFragment());
         } else {
             fragments.add(new FollowFragment());
-            fragments.add(new FollowFragment());
+            fragments.add(new MeFragment());
         }
         mViewPager = findViewById(R.id.vp_main);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -124,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 if (position > 1 && !hasLogin) {
-                    Toast.makeText(MainActivity.this, "需要登录", Toast.LENGTH_SHORT).show();
+                    login();
                 }
             }
 
@@ -132,73 +228,11 @@ public class MainActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) { }
         });
         TabLayout mTabLayout = findViewById(R.id.tl_main);
-        mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return fragments.get(position);
-            }
-
-            @Nullable
-            @Override
-            public CharSequence getPageTitle(int position) {
-                String title;
-                switch (position) {
-                    case 0:
-                        title = "推荐";
-                        break;
-                    case 1:
-                        title = "发现";
-                        break;
-                    case 2:
-                        title = "关注";
-                        break;
-                    default:
-                        title = "我";
-                        break;
-                }
-                return title;
-            }
-
-            @Override
-            public int getCount() {
-                return fragments.size();
-            }
-        });
+        mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
 
         // Set transform-page animation
-        mViewPager.setPageTransformer(false, new ViewPager.PageTransformer() {
-            private static final float MIN_SCALE = 0.85f;
-            private static final float MIN_ALPHA = 0.5f;
-
-            @Override
-            public void transformPage(@NonNull View page, float position) {
-                //a slide to b, position changes are a: 0 -> -1 ; b: 1 -> 0.
-                int pageWidth = page.getWidth();
-                int pageHeight = page.getHeight();
-                if (position < -1 || position > 1) {
-                    // This page is way off-screen to the left.
-                    page.setAlpha(0); // Not shown
-                } else {
-                    // -1 <= position <= 1
-                    // Modify the default slide transition to shrink the page as well
-                    float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
-                    float vertMargin = pageHeight * (1 - scaleFactor) / 2;
-                    float horzMargin = pageWidth * (1 - scaleFactor) / 2;
-                    if (position < 0) {
-                        page.setTranslationX(horzMargin - vertMargin / 2);
-                    } else {
-                        page.setTranslationX(-horzMargin + vertMargin / 2);
-                    }
-                    // Scale the page down (between MIN_SCALE and 1)
-                    page.setScaleX(scaleFactor);
-                    page.setScaleY(scaleFactor);
-                    // Fade the page relative to its size.
-                    page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE)
-                            / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
-                }
-            }
-        });
+        mViewPager.setPageTransformer(false, new ZoomOutPageTransformer());
     }
 
 }
