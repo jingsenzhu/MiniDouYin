@@ -22,16 +22,41 @@ public class UserActivity extends AppCompatActivity {
 
     private List<Fragment> fragments = new ArrayList<>();
     private ViewPager mViewPager;
+    boolean hasLogin;
+    boolean followState;
+    boolean followChanged = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user);
         Intent intent = getIntent();
-        String userName = intent.getCharSequenceExtra("username").toString();
-        String studentID = intent.getCharSequenceExtra("id").toString();
-        ((TextView)findViewById(R.id.tv_username)).setText(userName);
-        initTab(userName, studentID);
+        String userName = intent.getStringExtra("username");
+        String studentID = intent.getStringExtra("id");
+        hasLogin = intent.getBooleanExtra("has_login", false);
+        if (hasLogin) {
+            setContentView(R.layout.activity_user);
+            followState = intent.getBooleanExtra("follow_state", false);
+            ((TextView)findViewById(R.id.tv_username)).setText(userName);
+            initTab(userName, studentID);
+        } else {
+            setContentView(R.layout.activity_user_unlog);
+            DiscoverFragment fragment = new DiscoverFragment();
+            fragment.setUserName(userName);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fl_placeholder, fragment)
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (hasLogin) {
+            Intent i = new Intent();
+            i.putExtra("follow_state", followState);
+            i.putExtra("follow_changed", followChanged);
+        }
+        super.onBackPressed();
     }
 
     private void initTab(String userName, String studentID) {

@@ -1,5 +1,6 @@
 package com.bytedance.androidcamp.minidouyin.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -118,7 +119,6 @@ public class DiscoverFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getActivity().findViewById(R.id.tl_main).setVisibility(View.VISIBLE);
                 if (userName == null)
                     fetchFeed();
                 else
@@ -159,15 +159,19 @@ public class DiscoverFragment extends Fragment {
         public void bind(@NonNull final Video video, int FullWidth) {
             mTimeTextView.setText(video.getDate());
             mAuthorTextView.setText(video.getUserName());
-            mAuthorTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(mContext, UserActivity.class);
-                    intent.putExtra("username", video.getUserName());
-                    intent.putExtra("id", video.getStudentId());
-                    mContext.startActivity(intent);
-                }
-            });
+            if (mContext instanceof MainActivity) {
+                mAuthorTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(mContext, UserActivity.class);
+                        intent.putExtra("username", video.getUserName());
+                        intent.putExtra("id", video.getStudentId());
+                        intent.putExtra("has_login", ((MainActivity)mContext).isHasLogin());
+                        intent.putExtra("follow_state", ((MainActivity)mContext).checkFollowState(video.getUserName()));
+                        ((Activity)mContext).startActivityForResult(intent, MainActivity.USER_REQUEST_CODE);
+                    }
+                });
+            }
             int paddingWidth = 40;
 
             ConstraintLayout.LayoutParams layputParams =

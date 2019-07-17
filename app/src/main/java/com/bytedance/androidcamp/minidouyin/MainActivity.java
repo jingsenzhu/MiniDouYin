@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.room.Room;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.Animator;
@@ -15,6 +16,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -23,28 +25,35 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
 import com.bytedance.androidcamp.minidouyin.activity.LoginActivity;
+import com.bytedance.androidcamp.minidouyin.db.Follow;
+import com.bytedance.androidcamp.minidouyin.db.FollowDatabase;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.FollowFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.MeFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.RemindFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.VideoFragment;
+import com.bytedance.androidcamp.minidouyin.model.Video;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.bytedance.androidcamp.minidouyin.utils.DepthPageTransformer;
 import com.bytedance.androidcamp.minidouyin.utils.ZoomOutPageTransformer;
 import com.google.android.material.tabs.TabLayout;
 
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final int LOGIN_REQUEST_CODE = 6342;
+    public static final int USER_REQUEST_CODE = 1314;
 
     private List<Fragment> fragments = new ArrayList<>();
     private ViewPager mViewPager;
 
-    private ActionBar mActionBar;
+    private FollowDatabase database;
+    private List<Follow> followList = new ArrayList<>();
 
     private boolean hasLogin;
     private String loginName;
@@ -58,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 //        if (getSupportActionBar() != null)
 //            getSupportActionBar().hide();
         setContentView(R.layout.layout_loading);
-        mActionBar = getActionBar();
+        ActionBar mActionBar = getActionBar();
         if (mActionBar != null){
             mActionBar.hide();
         }
@@ -71,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 checkLogin();
                 initBtns();
                 initTab();
+                initDB();
             }
             @Override
             public void onAnimationStart(Animator animator) {}
@@ -89,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
             loginID = data.getStringExtra("user_id");
             if (loginName != null && loginID != null) {
                 hasLogin = true;
+                new FetchFollowListTask(this).execute();
                 writeLoginStatus();
                 Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                 fragments.remove(3);
@@ -99,6 +110,56 @@ public class MainActivity extends AppCompatActivity {
                 mViewPager.getAdapter().notifyDataSetChanged();
             }
         }
+    }
+
+    public boolean isHasLogin() {
+        return hasLogin;
+    }
+
+    public boolean checkFollowState(String userName) {
+        for (Follow follow : followList) {
+            if (follow.followName.equals(userName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void initDB() {
+        database = Room.databaseBuilder(MainActivity.this,
+                FollowDatabase.class, "follow-db").build();
+        new FetchFollowListTask(this).execute();
+    }
+
+    static private class FetchFollowListTask extends AsyncTask<Void, Void, List<Follow>>  {
+
+        private WeakReference<MainActivity> mActivity;
+
+        private FetchFollowListTask(MainActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected List<Follow> doInBackground(Void... voids) {
+            MainActivity activity = mActivity.get();
+            if (activity != null && activity.hasLogin) {
+                return activity.database.followDao().getFollowList(activity.loginID);
+            }
+            return Collections.emptyList();
+        }
+
+        @Override
+        protected void onPostExecute(List<Follow> follows) {
+            super.onPostExecute(follows);
+            MainActivity activity = mActivity.get();
+            if (activity != null && activity.hasLogin) {
+                activity.followList = follows;
+            }
+        }
+    }
+
+    public List<Follow> getFollowList() {
+        return followList;
     }
 
     private void writeLoginStatus() {
@@ -146,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
         mViewPager.getAdapter().notifyDataSetChanged();
         writeLoginStatus();
+        followList.clear();
     }
 
     private void initBtns() {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.bytedance.androidcamp.minidouyin.view.CircleImageView
+        android:id="@+id/civ_head"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/head"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_followname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="16dp"
+        android:textColor="@android:color/background_dark"
+        android:textSize="24sp"
+        android:text="123"
+        app:layout_constraintStart_toEndOf="@id/civ_head" />
+
+    <TextView
+        android:id="@+id/tv_followid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textSize="18sp"
+        android:text="123"
+        app:layout_constraintTop_toBottomOf="@id/tv_followname"
+        app:layout_constraintStart_toEndOf="@id/civ_head" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
