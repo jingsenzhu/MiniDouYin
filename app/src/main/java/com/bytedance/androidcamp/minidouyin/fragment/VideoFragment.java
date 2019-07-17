@@ -1,4 +1,4 @@
-package com.bytedance.androidcamp.minidouyin.activity;
+package com.bytedance.androidcamp.minidouyin.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,14 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bytedance.androidcamp.minidouyin.R;
 
 import java.util.ArrayList;
@@ -23,7 +23,8 @@ import java.util.List;
 import cn.jzvd.JZVideoPlayer;
 import cn.jzvd.JZVideoPlayerStandard;
 
-public class VideoActivity extends AppCompatActivity {
+public class VideoFragment extends Fragment {
+
     private RecyclerView mrvVideo;
     private List<String> urlList;
     private List<String> imgList;
@@ -31,32 +32,34 @@ public class VideoActivity extends AppCompatActivity {
     private PagerSnapHelper snapHelper;
     private LinearLayoutManager layoutManager;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View mView = inflater.inflate(R.layout.fragment_video, container, false);
 
         initUrlList();
         initImgList();
-        initView();
+        initView(mView);
         addListener();
+        
+        return mView;
     }
 
-    private void initView(){
-        mrvVideo = findViewById(R.id.rv_video);
+    private void initView(View view){
+        mrvVideo = view.findViewById(R.id.rv_video);
         snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mrvVideo);
 
-        layoutManager = new LinearLayoutManager(VideoActivity.this, RecyclerView.VERTICAL, false);
+        layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         mrvVideo.setLayoutManager(layoutManager);
 
         mrvVideo.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                    mrvVideo.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                 /*这么写是为了获取RecycleView的宽高*/
+                mrvVideo.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                /*这么写是为了获取RecycleView的宽高*/
                 // 创建Adapter
-                videoAdapter = new ListVideoAdapter(VideoActivity.this, mrvVideo.getWidth(), mrvVideo.getHeight());
+                videoAdapter = new ListVideoAdapter(getActivity(), mrvVideo.getWidth(), mrvVideo.getHeight());
                 // 设置Adapter
                 mrvVideo.setAdapter(videoAdapter);
             }
@@ -121,15 +124,6 @@ public class VideoActivity extends AppCompatActivity {
         JZVideoPlayer.releaseAllVideos();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (JZVideoPlayer.backPress()) {
-            return;
-        }
-        super.onBackPressed();
-    }
-
-
 
     class ListVideoAdapter extends RecyclerView.Adapter <VideoViewHolder> {
 
@@ -145,7 +139,7 @@ public class VideoActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(VideoViewHolder holder,  int position) {
+        public void onBindViewHolder(VideoViewHolder holder, int position) {
 
             holder.mp_video.setUp(urlList.get(position), JZVideoPlayerStandard.CURRENT_STATE_NORMAL);
             // 一开始播放第一个视频
@@ -155,7 +149,7 @@ public class VideoActivity extends AppCompatActivity {
 //            holder.mtextView.setText(urlList.get(position));
 
             // TODO : 设置缩略图
-            //Glide.with(VideoActivity.this).load(imgList.get(position)).into(holder.mp_video.thumbImageView);
+            //Glide.with(getActivity()).load(imgList.get(position)).into(holder.mp_video.thumbImageView);
 
         }
 
@@ -196,6 +190,5 @@ public class VideoActivity extends AppCompatActivity {
         }
 
     }
-
 
 }

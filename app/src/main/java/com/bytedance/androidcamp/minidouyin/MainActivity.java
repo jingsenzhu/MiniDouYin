@@ -22,12 +22,12 @@ import android.view.View;
 import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
-import com.bytedance.androidcamp.minidouyin.activity.VideoActivity;
 import com.bytedance.androidcamp.minidouyin.activity.LoginActivity;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.FollowFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.MeFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.RemindFragment;
+import com.bytedance.androidcamp.minidouyin.fragment.VideoFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.bytedance.androidcamp.minidouyin.utils.DepthPageTransformer;
 import com.bytedance.androidcamp.minidouyin.utils.ZoomOutPageTransformer;
@@ -81,9 +81,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//<<<<<<< Updated upstream
-//    private void checkLogin( ) {
-//=======
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -158,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!hasLogin) {
                     login();
                 } else {
-                    startActivity(new Intent(MainActivity.this, VideoActivity.class));
+
                 }
             }
         });
@@ -203,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTab() {
-        fragments.add(new DiscoverFragment());
+        fragments.add(new VideoFragment());
         fragments.add(new DiscoverFragment());
         if (!hasLogin) {
             fragments.add(new RemindFragment());

@@ -32,7 +32,6 @@
         </activity>
         <activity android:name=".activity.UserActivity" />
         <activity android:name=".activity.LoginActivity" android:theme="@style/myTransparent" />
-        <activity android:name=".activity.VideoActivity" />
         <activity android:name=".activity.CameraActivity" />
     </application>
 
