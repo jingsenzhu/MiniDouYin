@@ -81,18 +81,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        SharedPreferences preferences = getSharedPreferences(
-                getResources().getString(R.string.login_pref_name), MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("has_login", hasLogin);
-        editor.putString("login_name", loginName);
-        editor.putString("login_id", loginID);
-        editor.apply();
-        super.onDestroy();
-    }
-
 //<<<<<<< Updated upstream
 //    private void checkLogin( ) {
 //=======
@@ -104,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             loginID = data.getStringExtra("user_id");
             if (loginName != null && loginID != null) {
                 hasLogin = true;
+                writeLoginStatus();
                 Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                 fragments.remove(3);
                 fragments.remove(2);
@@ -113,6 +102,16 @@ public class MainActivity extends AppCompatActivity {
                 mViewPager.getAdapter().notifyDataSetChanged();
             }
         }
+    }
+
+    private void writeLoginStatus() {
+        SharedPreferences preferences = getSharedPreferences(
+                getResources().getString(R.string.login_pref_name), MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("has_login", hasLogin);
+        editor.putString("login_name", loginName);
+        editor.putString("login_id", loginID);
+        editor.apply();
     }
 
     private void checkLogin() {
@@ -149,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(new RemindFragment());
         mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
         mViewPager.getAdapter().notifyDataSetChanged();
+        writeLoginStatus();
     }
 
     private void initBtns() {
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!hasLogin) {
                     login();
                 } else {
-                    return;
+                    startActivity(new Intent(MainActivity.this, VideoActivity.class));
                 }
             }
         });
