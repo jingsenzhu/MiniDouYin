@@ -72,6 +72,20 @@ public class DiscoverFragment extends Fragment {
         /* 设定瀑布流layout */
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 //        mRecyclerView.setLayoutManager(new LinearLayoutManager(mView.getContext()));
+
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (dy > 20 && getActivity().findViewById(R.id.tl_main).getVisibility() == View.VISIBLE) {
+//                    getActivity().findViewById(R.id.tl_main).setVisibility(View.GONE);
+//                } /*else if (dy < -40 && getActivity().findViewById(R.id.tl_main).getVisibility() == View.GONE) {
+//                    getActivity().findViewById(R.id.tl_main).setVisibility(View.VISIBLE);
+//                }*/
+//            }
+//        });
+
         mRecyclerView.setAdapter(new RecyclerView.Adapter() {
             @NonNull
             @Override
@@ -104,6 +118,7 @@ public class DiscoverFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                getActivity().findViewById(R.id.tl_main).setVisibility(View.VISIBLE);
                 if (userName == null)
                     fetchFeed();
                 else

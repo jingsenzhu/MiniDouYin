@@ -4,4 +4,7 @@
     <string name="sig_content">苟利国家生死以，岂因祸福避趋之</string>
     <string name="login_pref_name">login_preferences</string>
     <string name="login">登录</string>
+    <string name="username">用户名</string>
+    <string name="userid">学号</string>
+    <string name="exit">退出账号</string>
 </resources>

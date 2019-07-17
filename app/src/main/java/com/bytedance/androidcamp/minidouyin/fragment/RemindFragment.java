@@ -1,6 +1,9 @@
 package com.bytedance.androidcamp.minidouyin.fragment;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -19,7 +22,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
+import com.bytedance.androidcamp.minidouyin.activity.LoginActivity;
 
 public class RemindFragment extends Fragment {
 
@@ -36,7 +41,7 @@ public class RemindFragment extends Fragment {
         reminder.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "登录中", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).login();
             }
         }, 2, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         remindTextView.setMovementMethod(LinkMovementMethod.getInstance());
