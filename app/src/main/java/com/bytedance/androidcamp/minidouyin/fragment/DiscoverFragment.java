@@ -222,12 +222,7 @@ public class DiscoverFragment extends Fragment {
                     .into(mImage);
 
             // 增加点击播放功能
-            mImage.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view) {
-                    ClickVideoActivity.launch(activity,video);
-                }
-            });
+            mImage.setOnClickListener(view -> ClickVideoActivity.launch(activity, video, itemView.findViewById(R.id.iv_cover)));
 
 
         }

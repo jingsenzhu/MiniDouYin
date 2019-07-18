@@ -6,6 +6,7 @@
 
     <com.bytedance.androidcamp.minidouyin.view.JZVideoPlayerStandardLoopVideo
         android:id="@+id/click_pop_video"
+        android:transitionName="shareVideo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
