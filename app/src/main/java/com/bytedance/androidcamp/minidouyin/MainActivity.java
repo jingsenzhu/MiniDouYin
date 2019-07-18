@@ -1,11 +1,9 @@
 package com.bytedance.androidcamp.minidouyin;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.room.Room;
 import androidx.viewpager.widget.ViewPager;
@@ -16,7 +14,6 @@ import android.app.ActionBar;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,10 +21,8 @@ import android.view.View;
 
 import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
-import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
 import com.bytedance.androidcamp.minidouyin.activity.CustomCameraActivity;
 import com.bytedance.androidcamp.minidouyin.activity.LoginActivity;
-import com.bytedance.androidcamp.minidouyin.activity.TakePictureActivity;
 import com.bytedance.androidcamp.minidouyin.db.Follow;
 import com.bytedance.androidcamp.minidouyin.db.FollowDatabase;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
@@ -35,10 +30,8 @@ import com.bytedance.androidcamp.minidouyin.fragment.FollowFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.MeFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.RemindFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.VideoFragment;
-import com.bytedance.androidcamp.minidouyin.model.Video;
 import com.bytedance.androidcamp.minidouyin.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.bytedance.androidcamp.minidouyin.utils.DepthPageTransformer;
 import com.bytedance.androidcamp.minidouyin.utils.ZoomOutPageTransformer;
 import com.google.android.material.tabs.TabLayout;
 
