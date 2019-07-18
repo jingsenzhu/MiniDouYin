@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -166,17 +168,29 @@ public class VideoFragment extends Fragment {
                     animation.setDuration(200);
                     animation.setRepeatCount(1);
                     animation.setRepeatMode(Animation.REVERSE);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            final ImageView heart = holder.itemView.findViewById(R.id.iv_like);
+                            heart.setVisibility(View.VISIBLE);
+                            Animation anim = AnimationUtils.loadAnimation(mContext, R.anim.like_anim);
+                            heart.startAnimation(anim);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
                     button.startAnimation(animation);
                 }
             });
 
-            holder.mp_video.setOnClickListener(new OnDoubleClickListener() {
-                @Override
-                public void onDoubleClick(View view) {
-                    likeList.set(position, true);
-                    holder.itemView.findViewById(R.id.iv_like).setVisibility(View.VISIBLE);
-                }
-            });
 
             holder.mp_video.setUp(urlList.get(position), JZVideoPlayerStandard.CURRENT_STATE_NORMAL);
             // 一开始播放第一个视频
