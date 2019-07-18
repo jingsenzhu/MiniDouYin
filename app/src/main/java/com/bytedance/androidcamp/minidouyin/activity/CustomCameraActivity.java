@@ -13,6 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import static android.media.MediaRecorder.VideoEncoder.H264;
 import static com.bytedance.androidcamp.minidouyin.utils.Utils.MEDIA_TYPE_IMAGE;
 import static com.bytedance.androidcamp.minidouyin.utils.Utils.MEDIA_TYPE_VIDEO;
 import static com.bytedance.androidcamp.minidouyin.utils.Utils.getOutputMediaFile;
@@ -38,6 +40,7 @@ public class CustomCameraActivity extends AppCompatActivity {
 
     private File mVideoFile;
     private File mPictureFile;
+    private ImageView mRecordImageview;
 
     private int CAMERA_TYPE = Camera.CameraInfo.CAMERA_FACING_BACK;
 
@@ -84,20 +87,21 @@ public class CustomCameraActivity extends AppCompatActivity {
 //            mCamera.takePicture(null,null,mPicture);
 //        });
 
-        findViewById(R.id.btn_record).setOnClickListener(v -> {
+
+
+
+        mRecordImageview = findViewById(R.id.btn_record);
+        mRecordImageview.setOnClickListener(v -> {
             //todo 录制，第一次点击是start，第二次点击是stop
             if (isRecording) {
                 //todo 停止录制
-                releaseMediaRecorder();
-                isRecording = false;
-                Intent i = new Intent(this, UploadVideoActivity.class);
-                i.putExtra("path", mVideoFile.getAbsolutePath());
-                startActivityForResult(i, REQUEST_UPLOAD);
+                stopRecord();
 
             } else {
                 //todo 录制
                 prepareVideoRecorder();
                 isRecording = true;
+                mRecordImageview.setImageDrawable(getResources().getDrawable(R.drawable.circle_stop_svg));
             }
         });
 
@@ -115,19 +119,16 @@ public class CustomCameraActivity extends AppCompatActivity {
                 startPreview(mSurfaceView.getHolder());
         });
 
-        findViewById(R.id.btn_zoom).setOnClickListener(v -> {
-            // 调焦，需要判断手机是否支持
-            Camera.Parameters parameters = mCamera.getParameters();
-            List<String> modes = parameters.getSupportedFocusModes(); // 判断支持
-            for(String mode : modes) {
-                if(mode.equals(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-                    break;
-                }
-            }
-            mCamera.setParameters(parameters);
-        });
+    }
 
+    // 停止录制
+    private void stopRecord(){
+        releaseMediaRecorder();
+        isRecording = false;
+        mRecordImageview.setImageDrawable(getResources().getDrawable(R.drawable.circle_svg));
+        Intent i = new Intent(this, UploadVideoActivity.class);
+        i.putExtra("path", mVideoFile.getAbsolutePath());
+        startActivityForResult(i, REQUEST_UPLOAD);
     }
 
     @Override
@@ -158,6 +159,17 @@ public class CustomCameraActivity extends AppCompatActivity {
         Camera.Parameters parameters = cam.getParameters();
         size = getOptimalPreviewSize(parameters.getSupportedPreviewSizes(),mSurfaceView.getWidth(),mSurfaceView.getHeight());
         parameters.setPreviewSize(size.width, size.height);
+
+        // 开启自动调焦，首先需要判断手机是否支持
+        List<String> modes = parameters.getSupportedFocusModes(); // 判断支持
+        for(String mode : modes) {
+            if(mode.equals(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                break;
+            }
+        }
+        cam.setParameters(parameters);
+
         return cam;
     }
 
@@ -236,7 +248,10 @@ public class CustomCameraActivity extends AppCompatActivity {
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-        mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        // 最大录制时间 10 seconds
+        mMediaRecorder.setMaxDuration(10*1000);
+
+        mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_1080P));
         mVideoFile = getOutputMediaFile(MEDIA_TYPE_VIDEO);
         mMediaRecorder.setOutputFile( mVideoFile.toString());
 
@@ -246,6 +261,18 @@ public class CustomCameraActivity extends AppCompatActivity {
         try{
             mMediaRecorder.prepare();
             mMediaRecorder.start();
+
+            // 设置达到最大录制时间自动停止
+            mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+                @Override
+                public void onInfo(MediaRecorder mediaRecorder, int i, int i1) {
+                    if(i==MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED)
+                    {
+                        stopRecord();
+                    }
+                }
+            });
+
         }catch (Exception e){
             Toast.makeText(CustomCameraActivity.this,
                     "MediaRecorder prepare Failed!"+e.getMessage(),

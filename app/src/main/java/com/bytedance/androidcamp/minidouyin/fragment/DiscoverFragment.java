@@ -337,7 +337,7 @@ public class DiscoverFragment extends Fragment {
 
             @Override
             public void onFailure(Call<PostVideoResponse> call, Throwable throwable) {
-                Toast.makeText(getActivity(), "upload failed! "+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "upload failed! "+throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
