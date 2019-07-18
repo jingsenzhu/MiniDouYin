@@ -338,7 +338,9 @@ public class MainActivity extends AppCompatActivity {
                 if (!hasLogin) {
                     login();
                 } else {
+                    Intent i = new Intent(MainActivity.this, CustomCameraActivity.class);
 
+                    startActivityForResult(i, CustomCameraActivity.REQUEST_UPLOAD);
                 }
             }
         });
