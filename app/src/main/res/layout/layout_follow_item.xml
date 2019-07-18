@@ -6,10 +6,13 @@
 
     <com.bytedance.androidcamp.minidouyin.view.CircleImageView
         android:id="@+id/civ_head"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:src="@drawable/head"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
@@ -19,22 +22,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
         android:textColor="@android:color/background_dark"
-        android:textSize="24sp"
-        android:text="123"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@id/civ_head" />
 
     <TextView
         android:id="@+id/tv_followid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:layout_marginStart="16dp"
-        android:textSize="18sp"
-        android:text="123"
+        android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_followname"
         app:layout_constraintStart_toEndOf="@id/civ_head" />
 
-
+    <Button
+        android:id="@+id/b_follow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="@string/follow_text"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

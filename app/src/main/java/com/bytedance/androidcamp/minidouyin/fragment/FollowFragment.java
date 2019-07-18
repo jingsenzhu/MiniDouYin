@@ -3,15 +3,19 @@ package com.bytedance.androidcamp.minidouyin.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -37,6 +41,7 @@ public class FollowFragment extends Fragment {
         final View mView = inflater.inflate(R.layout.fragment_follow, container, false);
         mRecyclerView = mView.findViewById(R.id.rv_follow);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.setAdapter(new RecyclerView.Adapter<FollowViewHolder>() {
             @NonNull
             @Override
@@ -74,12 +79,26 @@ public class FollowFragment extends Fragment {
         });
     }
 
+    public void updateFollowList(List<Follow> follows) {
+        followList = follows;
+        if (mRecyclerView != null && mRecyclerView.getAdapter() != null)
+            mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
     private static class FollowViewHolder extends RecyclerView.ViewHolder {
 
         private Context mContext;
 
         private TextView mFollowNameTextView;
         private TextView mFollowIDTextView;
+        private AppCompatButton mFollowButton;
+
+        private boolean followState = true;
+
+        private static final int FOLLOW_BACKGROUND = 0xffdddddd;
+        private static final int UNFOLLOW_BACKGROUND = 0xFFD81B60;
+        private static final int FOLLOW_TEXTCOLOR = 0xffaaaaaa;
+        private static final int UNFOLLOW_TEXTCOLOR = Color.WHITE;
 
         static public FollowViewHolder create(Context context, ViewGroup root) {
             View v = LayoutInflater.from(context).inflate(R.layout.layout_follow_item, root, false);
@@ -92,6 +111,7 @@ public class FollowFragment extends Fragment {
             super(itemView);
             mFollowNameTextView = itemView.findViewById(R.id.tv_followname);
             mFollowIDTextView = itemView.findViewById(R.id.tv_followid);
+            mFollowButton = itemView.findViewById(R.id.b_follow);
         }
 
         public void bind(@NonNull final Follow follow) {
@@ -108,6 +128,21 @@ public class FollowFragment extends Fragment {
                     ((Activity)mContext).startActivityForResult(i, MainActivity.USER_REQUEST_CODE);
                 }
             });
+            mFollowButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    followState = !followState;
+                    mFollowButton.setText(followState ? R.string.follow_text : R.string.unfollow_text);
+                    mFollowButton.setBackgroundColor(followState ? FOLLOW_BACKGROUND : UNFOLLOW_BACKGROUND);
+                    mFollowButton.setTextColor(followState ? FOLLOW_TEXTCOLOR : UNFOLLOW_TEXTCOLOR);
+                    ((MainActivity)mContext).updateFollow(followState, follow);
+                }
+            });
+            followState = true;
+            mFollowButton.setText(R.string.follow_text);
+            mFollowButton.setBackgroundColor(FOLLOW_BACKGROUND);
+            mFollowButton.setTextColor(FOLLOW_TEXTCOLOR);
+
         }
     }
 

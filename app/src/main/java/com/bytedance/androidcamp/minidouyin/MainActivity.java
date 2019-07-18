@@ -92,6 +92,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        database.close();
+        database = null;
+        super.onDestroy();
+    }
+
+    private long lastBackTime = System.currentTimeMillis();
+
+    @Override
+    public void onBackPressed() {
+        long backTime = System.currentTimeMillis();
+        if (backTime - lastBackTime < 1000) {
+            super.onBackPressed();
+        } else {
+            lastBackTime = backTime;
+            Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LOGIN_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
@@ -109,6 +129,22 @@ public class MainActivity extends AppCompatActivity {
                 mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
                 mViewPager.getAdapter().notifyDataSetChanged();
             }
+        } else if (requestCode == USER_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            boolean followChanged = data.getBooleanExtra("follow_changed", false);
+            boolean followState = data.getBooleanExtra("follow_state", false);
+            String followName = data.getStringExtra("follow_name");
+            String followID = data.getStringExtra("follow_id");
+            if (followChanged && loginID != null && followID != null) {
+                updateFollow(followState, new Follow(loginID, followName, followID));
+            }
+        }
+    }
+
+    public void updateFollow(boolean followState, Follow follow) {
+        if (followState) {
+            new FollowTask(this).execute(follow);
+        } else {
+            new UnFollowTask(this).execute(follow);
         }
     }
 
@@ -129,6 +165,66 @@ public class MainActivity extends AppCompatActivity {
         database = Room.databaseBuilder(MainActivity.this,
                 FollowDatabase.class, "follow-db").build();
         new FetchFollowListTask(this).execute();
+    }
+
+    static private class UnFollowTask extends AsyncTask<Follow, Follow, Integer> {
+
+        private WeakReference<MainActivity> mActivity;
+
+        private UnFollowTask(MainActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected Integer doInBackground(Follow... follows) {
+            Integer ret = 0;
+            for (Follow follow : follows) {
+                MainActivity activity = mActivity.get();
+                if (activity != null && activity.hasLogin) {
+                    ret += activity.database.followDao().unfollow(follow);
+                }
+            }
+            return ret;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+            MainActivity activity = mActivity.get();
+            if (activity != null) {
+                new FetchFollowListTask(activity).execute();
+            }
+        }
+    }
+
+    static private class FollowTask extends AsyncTask<Follow, Follow, Long> {
+
+        private WeakReference<MainActivity> mActivity;
+
+        private FollowTask(MainActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected Long doInBackground(Follow... follows) {
+            Long ret = 0L;
+            for (Follow follow : follows) {
+                MainActivity activity = mActivity.get();
+                if (activity != null && activity.hasLogin) {
+                    ret += activity.database.followDao().follow(follow);
+                }
+            }
+            return ret;
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
+            MainActivity activity = mActivity.get();
+            if (activity != null) {
+                new FetchFollowListTask(activity).execute();
+            }
+        }
     }
 
     static private class FetchFollowListTask extends AsyncTask<Void, Void, List<Follow>>  {
@@ -280,6 +376,8 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 if (position > 1 && !hasLogin) {
                     login();
+                } else if (position == 2 && fragments.get(2) instanceof FollowFragment) {
+                    ((FollowFragment)fragments.get(2)).updateFollowList(followList);
                 }
             }
 

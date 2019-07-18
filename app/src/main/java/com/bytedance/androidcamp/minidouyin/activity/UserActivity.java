@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.UserInfoFragment;
@@ -22,16 +23,18 @@ public class UserActivity extends AppCompatActivity {
 
     private List<Fragment> fragments = new ArrayList<>();
     private ViewPager mViewPager;
-    boolean hasLogin;
-    boolean followState;
-    boolean followChanged = false;
+    private boolean hasLogin;
+    private boolean followState;
+    private boolean followChanged = false;
+    private String userName;
+    private String studentID;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String userName = intent.getStringExtra("username");
-        String studentID = intent.getStringExtra("id");
+        userName = intent.getStringExtra("username");
+        studentID = intent.getStringExtra("id");
         hasLogin = intent.getBooleanExtra("has_login", false);
         if (hasLogin) {
             setContentView(R.layout.activity_user);
@@ -55,15 +58,30 @@ public class UserActivity extends AppCompatActivity {
             Intent i = new Intent();
             i.putExtra("follow_state", followState);
             i.putExtra("follow_changed", followChanged);
+            i.putExtra("follow_name", userName);
+            i.putExtra("follow_id", studentID);
+            setResult(RESULT_OK, i);
         }
         super.onBackPressed();
+    }
+
+    public boolean isFollowChanged() {
+        return followChanged;
+    }
+
+    public void setFollowState(boolean followState) {
+        this.followState = followState;
+    }
+
+    public void setFollowChanged(boolean followChanged) {
+        this.followChanged = followChanged;
     }
 
     private void initTab(String userName, String studentID) {
         fragments.add(new UserInfoFragment());
         fragments.add(new DiscoverFragment());
         ((DiscoverFragment)fragments.get(1)).setUserName(userName);
-        ((UserInfoFragment)fragments.get(0)).setUserInfo(userName, studentID);
+        ((UserInfoFragment)fragments.get(0)).setUserInfo(userName, studentID, followState);
         mViewPager = findViewById(R.id.vp_user);
         TabLayout mTabLayout = findViewById(R.id.tl_user);
         mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {

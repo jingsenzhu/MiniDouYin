@@ -166,9 +166,13 @@ public class DiscoverFragment extends Fragment {
                         Intent intent = new Intent(mContext, UserActivity.class);
                         intent.putExtra("username", video.getUserName());
                         intent.putExtra("id", video.getStudentId());
-                        intent.putExtra("has_login", ((MainActivity)mContext).isHasLogin());
+                        boolean hasLogin = ((MainActivity)mContext).isHasLogin();
+                        intent.putExtra("has_login", hasLogin);
                         intent.putExtra("follow_state", ((MainActivity)mContext).checkFollowState(video.getUserName()));
-                        ((Activity)mContext).startActivityForResult(intent, MainActivity.USER_REQUEST_CODE);
+                        if (hasLogin)
+                            ((Activity)mContext).startActivityForResult(intent, MainActivity.USER_REQUEST_CODE);
+                        else
+                            mContext.startActivity(intent);
                     }
                 });
             }
