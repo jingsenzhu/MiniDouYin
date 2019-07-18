@@ -102,6 +102,7 @@ public class VideoFragment extends Fragment {
         mrvVideo.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                // TODO : 设置StateChange的dx、dy
 
             }
 

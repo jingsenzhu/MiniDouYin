@@ -34,6 +34,7 @@ import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
+import com.bytedance.androidcamp.minidouyin.activity.ClickVideoActivity;
 import com.bytedance.androidcamp.minidouyin.activity.UserActivity;
 import com.bytedance.androidcamp.minidouyin.model.GetVideosResponse;
 import com.bytedance.androidcamp.minidouyin.model.IMiniDouyinService;
@@ -122,7 +123,7 @@ public class DiscoverFragment extends Fragment {
 
             @Override
             public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-                ((CardViewHolder)holder).bind(mVideos.get(position),mFullWidth);
+                ((CardViewHolder)holder).bind(mVideos.get(position),mFullWidth,getActivity());
             }
 
             @Override
@@ -179,7 +180,7 @@ public class DiscoverFragment extends Fragment {
             return viewHolder;
         }
 
-        public void bind(@NonNull final Video video, int FullWidth) {
+        public void bind(@NonNull final Video video, int FullWidth, Activity activity) {
             mTimeTextView.setText(video.getDate());
             mAuthorTextView.setText(video.getUserName());
             if (mContext instanceof MainActivity) {
@@ -219,6 +220,15 @@ public class DiscoverFragment extends Fragment {
                     .load(video.getImageUrl())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)//采用了缓存策略
                     .into(mImage);
+
+            // 增加点击播放功能
+            mImage.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    ClickVideoActivity.launch(activity,video);
+                }
+            });
+
 
         }
 
