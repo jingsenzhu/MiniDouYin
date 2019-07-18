@@ -11,12 +11,12 @@ import java.util.List;
 public interface FollowDao {
 
     @Query("SELECT * FROM follow WHERE user_id = :userID")
-    public List<Follow> getFollowList(String userID);
+    List<Follow> getFollowList(String userID);
 
     @Insert
-    public void follow(Follow follow);
+    long follow(Follow follow);
 
     @Delete
-    public void unfollow(Follow follow);
+    int unfollow(Follow follow);
 
 }
