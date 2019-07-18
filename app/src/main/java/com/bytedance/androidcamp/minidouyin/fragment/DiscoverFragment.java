@@ -2,7 +2,12 @@ package com.bytedance.androidcamp.minidouyin.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,16 +36,27 @@ import com.bytedance.androidcamp.minidouyin.model.GetVideosResponse;
 import com.bytedance.androidcamp.minidouyin.model.IMiniDouyinService;
 import com.bytedance.androidcamp.minidouyin.model.Video;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bytedance.androidcamp.minidouyin.utils.ResourceUtils;
+import com.bytedance.androidcamp.minidouyin.model.PostVideoResponse;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.bytedance.androidcamp.minidouyin.utils.Utils.MEDIA_TYPE_IMAGE;
+import static com.bytedance.androidcamp.minidouyin.utils.Utils.getOutputMediaFile;
 
 public class DiscoverFragment extends Fragment {
 
@@ -243,5 +259,67 @@ public class DiscoverFragment extends Fragment {
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private MultipartBody.Part getMultipartFromUri(String name, Uri uri) {
+        File f = new File(ResourceUtils.getRealPath(getActivity(), uri));
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), f);
+        return MultipartBody.Part.createFormData(name, f.getName(), requestFile);
+    }
+    public Bitmap getVideoThumb(String path) {
+        MediaMetadataRetriever media = new MediaMetadataRetriever();
+        media.setDataSource(path);
+        Bitmap frameAtTime = media.getFrameAtTime(500 * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+        if (frameAtTime == null) {
+            frameAtTime = media.getFrameAtTime( 1000 * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+        }
+        return frameAtTime;
+    }
+
+    public void postVideo(String userName, String userID, String videoPath) {
+
+        Uri SelectedVideo = Uri.fromFile(new File(videoPath));
+        // TODO: we already have bitmap
+        Bitmap bitmapSelectedImage = getVideoThumb(videoPath);
+        File selectPictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+        if (selectPictureFile == null) {
+            Toast.makeText(getActivity(), "getPic file failed!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+
+            FileOutputStream fos1 = new FileOutputStream(selectPictureFile);
+            bitmapSelectedImage.compress(Bitmap.CompressFormat.JPEG, 100, fos1);
+            fos1.flush();
+            fos1.close();
+        } catch (IOException e) {
+            Log.d("mPicture", "Error accessing file: " + e.getMessage());
+        }
+        // 使得图片可以被相册找到
+        MediaScannerConnection.scanFile(getActivity(), new String[] { selectPictureFile.toString()},null,null);
+        Uri SelectedImage = Uri.fromFile(selectPictureFile);
+
+        MultipartBody.Part coverImagePart = getMultipartFromUri("cover_image", SelectedImage);
+        MultipartBody.Part videoPart = getMultipartFromUri("video", SelectedVideo);
+        // TODO 9: post video & update buttons
+
+        Call<PostVideoResponse> call = miniDouyinService.postVideo(userID,userName, coverImagePart, videoPart);
+        call.enqueue(new Callback<PostVideoResponse>() {
+            @Override
+            public void onResponse(Call<PostVideoResponse> call, Response<PostVideoResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    PostVideoResponse postRes = response.body();
+                    if (postRes.isSuccess()) {
+                        Toast.makeText( getActivity() , "upload successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostVideoResponse> call, Throwable throwable) {
+                Toast.makeText(getActivity(), "upload failed! "+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }

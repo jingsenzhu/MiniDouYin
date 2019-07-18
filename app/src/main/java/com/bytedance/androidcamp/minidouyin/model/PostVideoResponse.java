@@ -1,4 +1,4 @@
-package com.bytedance.androidcamp.network.dou.model;
+package com.bytedance.androidcamp.minidouyin.model;
 
 import com.google.gson.annotations.SerializedName;
 

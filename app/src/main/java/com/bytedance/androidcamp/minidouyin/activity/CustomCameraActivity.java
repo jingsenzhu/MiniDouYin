@@ -1,5 +1,6 @@
 package com.bytedance.androidcamp.minidouyin.activity;
 
+import android.content.Intent;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -14,8 +15,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
 
 import java.io.File;
@@ -29,6 +32,7 @@ import static com.bytedance.androidcamp.minidouyin.utils.Utils.getOutputMediaFil
 
 public class CustomCameraActivity extends AppCompatActivity {
 
+    public static final int REQUEST_UPLOAD = 4567;
     private SurfaceView mSurfaceView;
     private Camera mCamera;
 
@@ -61,6 +65,7 @@ public class CustomCameraActivity extends AppCompatActivity {
             public void surfaceCreated(SurfaceHolder holder) {
                 mCamera = getCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
                 startPreview(holder);
+
             }
 
             @Override
@@ -85,12 +90,18 @@ public class CustomCameraActivity extends AppCompatActivity {
                 //todo 停止录制
                 releaseMediaRecorder();
                 isRecording = false;
+                Intent i = new Intent(this, UploadVideoActivity.class);
+                i.putExtra("path", mVideoFile.getAbsolutePath());
+                startActivityForResult(i, REQUEST_UPLOAD);
+
             } else {
                 //todo 录制
                 prepareVideoRecorder();
                 isRecording = true;
             }
         });
+
+
 
         findViewById(R.id.btn_facing).setOnClickListener(v -> {
             //todo 切换前后摄像头
@@ -105,8 +116,32 @@ public class CustomCameraActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btn_zoom).setOnClickListener(v -> {
-            //todo 调焦，需要判断手机是否支持
+            // 调焦，需要判断手机是否支持
+            Camera.Parameters parameters = mCamera.getParameters();
+            List<String> modes = parameters.getSupportedFocusModes(); // 判断支持
+            for(String mode : modes) {
+                if(mode.equals(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                    break;
+                }
+            }
+            mCamera.setParameters(parameters);
         });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_UPLOAD && resultCode == RESULT_OK && data != null) {
+            String returnPath = data.getStringExtra("path");
+            if (returnPath != null ) {
+                Intent i = new Intent();
+                i.putExtra("path",returnPath);
+                setResult(RESULT_OK, i);
+                finish();
+            }
+        }
     }
 
     public Camera getCamera(int position) {

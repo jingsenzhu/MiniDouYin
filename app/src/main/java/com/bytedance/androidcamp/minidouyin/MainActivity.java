@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.app.ActionBar;
 import android.app.ActivityOptions;
@@ -22,12 +23,15 @@ import android.view.View;
 import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
+import com.bytedance.androidcamp.minidouyin.activity.CustomCameraActivity;
 import com.bytedance.androidcamp.minidouyin.activity.LoginActivity;
+import com.bytedance.androidcamp.minidouyin.activity.TakePictureActivity;
 import com.bytedance.androidcamp.minidouyin.fragment.DiscoverFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.FollowFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.MeFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.RemindFragment;
 import com.bytedance.androidcamp.minidouyin.fragment.VideoFragment;
+import com.bytedance.androidcamp.minidouyin.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.bytedance.androidcamp.minidouyin.utils.DepthPageTransformer;
 import com.bytedance.androidcamp.minidouyin.utils.ZoomOutPageTransformer;
@@ -40,6 +44,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static final int LOGIN_REQUEST_CODE = 6342;
+    private static final int REQUEST_EXTERNAL_STORAGE = 101;
 
     private List<Fragment> fragments = new ArrayList<>();
     private ViewPager mViewPager;
@@ -50,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
     private String loginName;
     private String loginID;
     private FloatingActionButton maddButton;
+    //todo :在这里申请相机、存储的权限
+    String[] permissions = new String[] {
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO,
+    };
 
 
     @Override
@@ -61,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
         mActionBar = getActionBar();
         if (mActionBar != null){
             mActionBar.hide();
+        }
+        if (Utils.isPermissionsReady(MainActivity.this,permissions)) {
+
+        } else {
+
+            Utils.reuqestPermissions(MainActivity.this,permissions,REQUEST_EXTERNAL_STORAGE);
         }
 
         LottieAnimationView animationView = findViewById(R.id.lav_loading);
@@ -97,6 +115,12 @@ public class MainActivity extends AppCompatActivity {
                 fragments.add(new MeFragment());
                 mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
                 mViewPager.getAdapter().notifyDataSetChanged();
+            }
+        }
+        else if (requestCode == CustomCameraActivity.REQUEST_UPLOAD && resultCode == RESULT_OK && data != null) {
+            String returnPath = data.getStringExtra("path");
+            if (returnPath != null) {
+                ((DiscoverFragment)fragments.get(1)).postVideo(loginName, loginID,returnPath);
             }
         }
     }
