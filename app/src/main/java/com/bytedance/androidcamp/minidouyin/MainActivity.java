@@ -19,6 +19,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
@@ -349,6 +351,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(i, CustomCameraActivity.REQUEST_UPLOAD);
             }
         });
+        findViewById(R.id.fab_add).setVisibility(View.GONE);
     }
 
     class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
@@ -413,10 +416,23 @@ public class MainActivity extends AppCompatActivity {
                 if (position == 0) {
                     findViewById(R.id.tl_main).startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.tab_out));
                     findViewById(R.id.tl_main).setVisibility(View.GONE);
+
+                    AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+                    alphaAnimation.setDuration(300);
+                    alphaAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+                    findViewById(R.id.fab_add).startAnimation(alphaAnimation);
+                    findViewById(R.id.fab_add).setVisibility(View.GONE);
                 } else {
                     if (findViewById(R.id.tl_main).getVisibility() != View.VISIBLE) {
                         findViewById(R.id.tl_main).startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.tab_in));
                         findViewById(R.id.tl_main).setVisibility(View.VISIBLE);
+                    }
+                    if (findViewById(R.id.fab_add).getVisibility() != View.VISIBLE) {
+                        AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
+                        alphaAnimation.setDuration(300);
+                        alphaAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+                        findViewById(R.id.fab_add).startAnimation(alphaAnimation);
+                        findViewById(R.id.fab_add).setVisibility(View.VISIBLE);
                     }
                 }
                 if (position > 1 && !hasLogin) {

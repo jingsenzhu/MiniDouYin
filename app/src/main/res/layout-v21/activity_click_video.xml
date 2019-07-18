@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,4 +14,48 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"/>
 
-</RelativeLayout>
+    <ImageButton
+        android:id="@+id/b_like"
+        android:background="#0000"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_like"
+        android:layout_margin="8dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toTopOf="@id/ib_comment"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
+    <ImageView
+        android:id="@+id/iv_like"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:layout_alignParentTop="true"
+        app:layout_constraintBottom_toTopOf="@id/ib_comment"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_heart"
+        android:visibility="invisible" />
+    <ImageButton
+        android:id="@+id/ib_comment"
+        android:layout_below="@id/b_like"
+        android:layout_margin="8dp"
+        android:background="#0000"
+        android:src="@drawable/ic_comment"
+        android:scaleType="centerInside"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
+    <ImageButton
+        android:layout_margin="8dp"
+        android:background="#0000"
+        android:layout_below="@id/ib_comment"
+        app:layout_constraintTop_toBottomOf="@id/ib_comment"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_share"
+        android:scaleType="centerInside"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

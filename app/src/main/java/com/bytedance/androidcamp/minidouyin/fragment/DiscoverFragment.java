@@ -67,7 +67,7 @@ public class DiscoverFragment extends Fragment {
     private List<Video> mVideos = new ArrayList<>();
 
 
-    public final String BASE_URL = "http://test.androidcamp.bytedance.com/mini_douyin/invoke/";
+    private final String BASE_URL = "http://test.androidcamp.bytedance.com/mini_douyin/invoke/";
 
     private Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
