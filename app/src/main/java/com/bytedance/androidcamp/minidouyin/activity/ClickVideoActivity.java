@@ -18,6 +18,10 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
+import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
 import com.bytedance.androidcamp.minidouyin.model.Video;
@@ -54,7 +58,16 @@ public class ClickVideoActivity extends AppCompatActivity {
 
         mvideoPlayer.setUp(videourl,JZVideoPlayerStandard.SCREEN_WINDOW_FULLSCREEN | CURRENT_STATE_NORMAL );
         mvideoPlayer.startVideo();
-        Glide.with(this).load(imgurl).into(mvideoPlayer.thumbImageView);
+
+        GlideBuilder builder = new GlideBuilder(this);
+        int diskSizeInBytes = 1024 * 1024 * 100;
+        int memorySizeInBytes = 1024 * 1024 * 60;
+        builder.setDiskCache(new InternalCacheDiskCacheFactory(this, diskSizeInBytes));
+        builder.setMemoryCache(new LruResourceCache(memorySizeInBytes));
+        Glide.with(this)
+                .load(imgurl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(mvideoPlayer.thumbImageView);
         mvideoPlayer.thumbImageView.setVisibility(View.VISIBLE);
 
         initBtns();

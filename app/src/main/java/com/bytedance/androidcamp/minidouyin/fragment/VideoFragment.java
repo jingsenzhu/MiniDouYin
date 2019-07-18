@@ -25,6 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
+import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
 import com.bytedance.androidcamp.minidouyin.model.GetVideosResponse;
@@ -223,8 +227,16 @@ public class VideoFragment extends Fragment {
             }
 //            holder.mtextView.setText(urlList.get(position));
 
-            // TODO : 设置缩略图
-            Glide.with(getActivity()).load(urlList.get(position).getImageUrl()).into(holder.mp_video.thumbImageView);
+            // 设置缩略图
+            GlideBuilder builder = new GlideBuilder(getActivity());
+            int diskSizeInBytes = 1024 * 1024 * 100;
+            int memorySizeInBytes = 1024 * 1024 * 60;
+            builder.setDiskCache(new InternalCacheDiskCacheFactory(getActivity(), diskSizeInBytes));
+            builder.setMemoryCache(new LruResourceCache(memorySizeInBytes));
+            Glide.with(getActivity())
+                    .load(urlList.get(position).getImageUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.mp_video.thumbImageView);
             holder.mp_video.thumbImageView.setVisibility(View.VISIBLE);
         }
 

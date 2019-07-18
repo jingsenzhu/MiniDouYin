@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         long backTime = System.currentTimeMillis();
-        if (backTime - lastBackTime < 1000) {
+        if (backTime - lastBackTime < 2000) {
             super.onBackPressed();
         } else {
             lastBackTime = backTime;
