@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
             boolean followState = data.getBooleanExtra("follow_state", false);
             String followName = data.getStringExtra("follow_name");
             String followID = data.getStringExtra("follow_id");
+            updateFollowFragmentFlag = true;
             if (followChanged && loginID != null && followID != null) {
                 updateFollow(followState, new Follow(loginID, followName, followID));
             }
@@ -171,6 +172,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             new UnFollowTask(this).execute(follow);
         }
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public String getLoginID() {
+        return loginID;
     }
 
     public boolean isHasLogin() {
@@ -222,6 +231,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean updateFollowFragmentFlag = false;
+
     static private class FollowTask extends AsyncTask<Follow, Follow, Long> {
 
         private WeakReference<MainActivity> mActivity;
@@ -232,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Long doInBackground(Follow... follows) {
-            Long ret = 0L;
+            long ret = 0L;
             for (Follow follow : follows) {
                 MainActivity activity = mActivity.get();
                 if (activity != null && activity.hasLogin) {
@@ -275,6 +286,10 @@ public class MainActivity extends AppCompatActivity {
             MainActivity activity = mActivity.get();
             if (activity != null && activity.hasLogin) {
                 activity.followList = follows;
+                if (activity.updateFollowFragmentFlag == true) {
+                    ((FollowFragment) activity.fragments.get(2)).updateFollowList(follows);
+                    activity.updateFollowFragmentFlag = false;
+                }
             }
         }
     }

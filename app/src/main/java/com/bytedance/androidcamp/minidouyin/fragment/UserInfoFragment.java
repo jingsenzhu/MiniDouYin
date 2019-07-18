@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.bytedance.androidcamp.minidouyin.R;
@@ -32,22 +33,23 @@ public class UserInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_userinfo, container, false);
-        Button followButton = v.findViewById(R.id.b_follow);
+        AppCompatButton followButton = v.findViewById(R.id.b_follow);
         followButton.setTextColor(followState ? FOLLOW_TEXTCOLOR : UNFOLLOW_TEXTCOLOR);
-        followButton.setBackgroundColor(followState ? FOLLOW_BACKGROUND : UNFOLLOW_BACKGROUND);
+        followButton.setBackgroundDrawable(followState ?
+                getResources().getDrawable(R.drawable.drawable_followbutton) :
+                getResources().getDrawable(R.drawable.drawable_unfollowbutton));
         followButton.setText(followState ? R.string.follow_text : R.string.unfollow_text);
-        v.findViewById(R.id.b_follow).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Button button = (Button)view;
-                followState = !followState;
-                UserActivity activity = (UserActivity)getActivity();
-                activity.setFollowState(followState);
-                activity.setFollowChanged(!activity.isFollowChanged());
-                button.setTextColor(followState ? FOLLOW_TEXTCOLOR : UNFOLLOW_TEXTCOLOR);
-                button.setBackgroundColor(followState ? FOLLOW_BACKGROUND : UNFOLLOW_BACKGROUND);
-                button.setText(followState ? R.string.follow_text : R.string.unfollow_text);
-            }
+        v.findViewById(R.id.b_follow).setOnClickListener(view -> {
+            AppCompatButton button = (AppCompatButton)view;
+            followState = !followState;
+            UserActivity activity = (UserActivity)getActivity();
+            activity.setFollowState(followState);
+            activity.setFollowChanged(!activity.isFollowChanged());
+            button.setTextColor(followState ? FOLLOW_TEXTCOLOR : UNFOLLOW_TEXTCOLOR);
+            button.setBackgroundDrawable(followState ?
+                    getResources().getDrawable(R.drawable.drawable_followbutton) :
+                    getResources().getDrawable(R.drawable.drawable_unfollowbutton));
+            button.setText(followState ? R.string.follow_text : R.string.unfollow_text);
         });
         return v;
     }

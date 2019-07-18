@@ -43,6 +43,7 @@ public class UserActivity extends AppCompatActivity {
             initTab(userName, studentID);
         } else {
             setContentView(R.layout.activity_user_unlog);
+            ((TextView)findViewById(R.id.tv_username)).setText(userName);
             DiscoverFragment fragment = new DiscoverFragment();
             fragment.setUserName(userName);
             getSupportFragmentManager()

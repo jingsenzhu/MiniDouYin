@@ -69,13 +69,10 @@ public class FollowFragment extends Fragment {
         followList = ((MainActivity)getActivity()).getFollowList();
         mRecyclerView.getAdapter().notifyDataSetChanged();
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                followList = ((MainActivity)getActivity()).getFollowList();
-                mRecyclerView.getAdapter().notifyDataSetChanged();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            followList = ((MainActivity)getActivity()).getFollowList();
+            mRecyclerView.getAdapter().notifyDataSetChanged();
+            mSwipeRefreshLayout.setRefreshing(false);
         });
     }
 
@@ -117,30 +114,28 @@ public class FollowFragment extends Fragment {
         public void bind(@NonNull final Follow follow) {
             mFollowNameTextView.setText(follow.followName);
             mFollowIDTextView.setText(follow.followID);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(mContext, UserActivity.class);
-                    i.putExtra("username", follow.followName);
-                    i.putExtra("id", follow.followID);
-                    i.putExtra("has_login", ((MainActivity)mContext).isHasLogin());
-                    i.putExtra("follow_state", true);
-                    ((Activity)mContext).startActivityForResult(i, MainActivity.USER_REQUEST_CODE);
-                }
+            itemView.setOnClickListener(view -> {
+                Intent i = new Intent(mContext, UserActivity.class);
+                i.putExtra("username", follow.followName);
+                i.putExtra("id", follow.followID);
+                i.putExtra("has_login", ((MainActivity)mContext).isHasLogin());
+                i.putExtra("follow_state", true);
+                ((Activity)mContext).startActivityForResult(i, MainActivity.USER_REQUEST_CODE);
             });
-            mFollowButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    followState = !followState;
-                    mFollowButton.setText(followState ? R.string.follow_text : R.string.unfollow_text);
-                    mFollowButton.setBackgroundColor(followState ? FOLLOW_BACKGROUND : UNFOLLOW_BACKGROUND);
-                    mFollowButton.setTextColor(followState ? FOLLOW_TEXTCOLOR : UNFOLLOW_TEXTCOLOR);
-                    ((MainActivity)mContext).updateFollow(followState, follow);
-                }
+            mFollowButton.setOnClickListener(view -> {
+                followState = !followState;
+                mFollowButton.setText(followState ? R.string.follow_text : R.string.unfollow_text);
+                mFollowButton.setBackgroundDrawable(followState ?
+                        mContext.getResources().getDrawable(R.drawable.drawable_followbutton) :
+                        mContext.getResources().getDrawable(R.drawable.drawable_unfollowbutton));
+//                    mFollowButton.setBackgroundColor(followState ? FOLLOW_BACKGROUND : UNFOLLOW_BACKGROUND);
+                mFollowButton.setTextColor(followState ? FOLLOW_TEXTCOLOR : UNFOLLOW_TEXTCOLOR);
+                ((MainActivity)mContext).updateFollow(followState, follow);
             });
             followState = true;
             mFollowButton.setText(R.string.follow_text);
-            mFollowButton.setBackgroundColor(FOLLOW_BACKGROUND);
+//            mFollowButton.setBackgroundColor(FOLLOW_BACKGROUND);
+            mFollowButton.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.drawable_followbutton));
             mFollowButton.setTextColor(FOLLOW_TEXTCOLOR);
 
         }
