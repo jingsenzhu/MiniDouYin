@@ -1,12 +1,14 @@
 package com.bytedance.androidcamp.minidouyin.fragment;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,6 +82,14 @@ public class DiscoverFragment extends Fragment {
 
     private int mFullWidth;
 
+    public DiscoverFragment() {
+        super();
+    }
+    public DiscoverFragment(String userName) {
+        super();
+        this.userName = userName;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -132,14 +142,11 @@ public class DiscoverFragment extends Fragment {
         else
             fetchFeed(userName);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (userName == null)
-                    fetchFeed();
-                else
-                    fetchFeed(userName);
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            if (userName == null)
+                fetchFeed();
+            else
+                fetchFeed(userName);
         });
     }
 

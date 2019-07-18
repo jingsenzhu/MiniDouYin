@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -46,17 +47,34 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/fl_placeholder"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_bottom"
                 android:layout_width="match_parent"
                 android:layout_marginTop="50dp"
                 android:layout_height="0dp"
                 app:layout_constraintVertical_weight="4"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rl_name" />
+                app:layout_constraintTop_toBottomOf="@id/rl_name"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/vp_user"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tl_user"/>
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tl_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    app:tabIndicatorFullWidth="false"
+                    app:tabUnboundedRipple="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <RelativeLayout
                 android:id="@+id/rl_name"
+                android:orientation="horizontal"
                 app:layout_constraintTop_toTopOf="parent"
                 android:background="@android:color/holo_blue_bright"
                 android:layout_width="match_parent"
@@ -71,15 +89,6 @@
                     android:layout_marginEnd="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/b_exit"
-                    android:layout_toEndOf="@id/tv_username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorAccent"
-                    android:textColor="@android:color/background_light"
-                    android:text="@string/exit" />
             </RelativeLayout>
 
             <com.bytedance.androidcamp.minidouyin.view.CircleImageView
@@ -87,12 +96,15 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/head"
+                android:transitionName="shareUserHead"
                 app:layout_constraintHorizontal_bias="0.9"
-                app:layout_constraintBottom_toTopOf="@id/fl_placeholder"
+                app:layout_constraintBottom_toTopOf="@id/cl_bottom"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

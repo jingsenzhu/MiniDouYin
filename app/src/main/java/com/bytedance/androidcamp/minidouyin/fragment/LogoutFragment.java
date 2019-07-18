@@ -21,6 +21,16 @@ public class LogoutFragment extends Fragment {
     private String userName;
     private String userID;
 
+    public LogoutFragment() {
+        super();
+    }
+
+    public LogoutFragment(String userName, String userID) {
+        super();
+        this.userName = userName;
+        this.userID = userID;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,5 +62,9 @@ public class LogoutFragment extends Fragment {
     public void setUserInfo(String userName, String studentID) {
         this.userName = userName;
         this.userID = studentID;
+        if (getView() != null) {
+            ((TextView)getView().findViewById(R.id.tv_name)).setText("用户名：" + userName);
+            ((TextView)getView().findViewById(R.id.tv_id)).setText("学号：" + userID);
+        }
     }
 }

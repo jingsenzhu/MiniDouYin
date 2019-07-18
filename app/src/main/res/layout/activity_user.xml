@@ -81,7 +81,9 @@
                 android:layout_height="50dp">
                 <TextView
                     android:id="@+id/tv_username"
-                    android:layout_centerInParent="true"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="16dp"
                     android:textColor="@android:color/background_light"
                     android:textSize="24sp"
                     android:layout_marginEnd="16dp"

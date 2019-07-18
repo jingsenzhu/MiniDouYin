@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.bytedance.androidcamp.minidouyin.activity.CameraActivity;
@@ -87,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
         if (Utils.isPermissionsReady(MainActivity.this,permissions)) {
 
         } else {
-
             Utils.reuqestPermissions(MainActivity.this,permissions,REQUEST_EXTERNAL_STORAGE);
         }
 
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 fragments.remove(3);
                 fragments.remove(2);
                 fragments.add(new FollowFragment());
-                fragments.add(new MeFragment());
+                fragments.add(new MeFragment(loginName, loginID));
                 mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
                 mViewPager.getAdapter().notifyDataSetChanged();
             }
@@ -347,16 +347,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initBtns() {
-        findViewById(R.id.fab_add).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!hasLogin) {
-                    login();
-                } else {
-                    Intent i = new Intent(MainActivity.this, CustomCameraActivity.class);
+        findViewById(R.id.fab_add).setOnClickListener(view -> {
+            if (!hasLogin) {
+                login();
+            } else {
+                Intent i = new Intent(MainActivity.this, CustomCameraActivity.class);
 
-                    startActivityForResult(i, CustomCameraActivity.REQUEST_UPLOAD);
-                }
+                startActivityForResult(i, CustomCameraActivity.REQUEST_UPLOAD);
             }
         });
     }
@@ -399,6 +396,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void goToDiscover() {
+        mViewPager.setCurrentItem(1, true);
+    }
+
     private void initTab() {
         fragments.add(new VideoFragment());
         fragments.add(new DiscoverFragment());
@@ -407,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
             fragments.add(new RemindFragment());
         } else {
             fragments.add(new FollowFragment());
-            fragments.add(new MeFragment());
+            fragments.add(new MeFragment(loginName, loginID));
         }
         mViewPager = findViewById(R.id.vp_main);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -416,6 +417,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                if (position == 0) {
+                    findViewById(R.id.tl_main).startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.tab_out));
+                    findViewById(R.id.tl_main).setVisibility(View.GONE);
+                } else {
+                    if (findViewById(R.id.tl_main).getVisibility() != View.VISIBLE) {
+                        findViewById(R.id.tl_main).startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.tab_in));
+                        findViewById(R.id.tl_main).setVisibility(View.VISIBLE);
+                    }
+                }
                 if (position > 1 && !hasLogin) {
                     login();
                 } else if (position == 2 && fragments.get(2) instanceof FollowFragment) {
@@ -429,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout mTabLayout = findViewById(R.id.tl_main);
         mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
-
+        mTabLayout.setVisibility(View.GONE);
         // Set transform-page animation
         mViewPager.setPageTransformer(false, new ZoomOutPageTransformer());
     }

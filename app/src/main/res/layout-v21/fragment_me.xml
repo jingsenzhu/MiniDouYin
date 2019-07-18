@@ -74,10 +74,11 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/b_exit"
+                    android:layout_marginStart="8dp"
                     android:layout_toEndOf="@id/tv_username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorAccent"
+                    android:backgroundTint="@color/colorAccent"
                     android:textColor="@android:color/background_light"
                     android:text="@string/exit" />
             </RelativeLayout>

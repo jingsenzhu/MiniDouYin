@@ -2,19 +2,25 @@ package com.bytedance.androidcamp.minidouyin.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
 
 import java.util.ArrayList;
@@ -46,6 +52,9 @@ public class VideoFragment extends Fragment {
     }
 
     private void initView(View view){
+
+        view.findViewById(R.id.tv_discover).setOnClickListener(v -> ((MainActivity)getActivity()).goToDiscover());
+
         mrvVideo = view.findViewById(R.id.rv_video);
         snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mrvVideo);
@@ -78,7 +87,6 @@ public class VideoFragment extends Fragment {
         urlList.add("http://chuangfen.oss-cn-hangzhou.aliyuncs.com/public/attachment/201803/100651/201803141625005241.mp4");
         urlList.add("http://chuangfen.oss-cn-hangzhou.aliyuncs.com/public/attachment/201803/100651/201803141624378522.mp4");
         urlList.add("http://chuangfen.oss-cn-hangzhou.aliyuncs.com/public/attachment/201803/100651/201803131546119319.mp4");
-
     }
 
     private void initImgList()
@@ -131,19 +139,48 @@ public class VideoFragment extends Fragment {
         private int mheight;
         private int mwidth;
 
+        private List<Boolean> likeList = new ArrayList<>();
+
 
         public ListVideoAdapter(Context context, int width, int height) {
             mContext = context;
             mwidth = width;
             mheight = height;
+            for (int i = 0; i < urlList.size(); i++) {
+                likeList.add(false);
+            }
         }
 
         @Override
-        public void onBindViewHolder(VideoViewHolder holder, int position) {
+        public void onBindViewHolder(final VideoViewHolder holder, final int position) {
+
+            ImageButton imageButton = holder.itemView.findViewById(R.id.b_like);
+            imageButton.setOnClickListener(v -> {
+                ImageButton button = (ImageButton)v;
+                boolean like = !likeList.get(position);
+                likeList.set(position, like);
+                button.setImageDrawable(getResources().getDrawable(like ? R.drawable.ic_heart : R.drawable.ic_like));
+                if (like) {
+                    ScaleAnimation animation = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,
+                            ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+                    animation.setDuration(200);
+                    animation.setRepeatCount(1);
+                    animation.setRepeatMode(Animation.REVERSE);
+                    button.startAnimation(animation);
+                }
+            });
+
+            holder.mp_video.setOnClickListener(new OnDoubleClickListener() {
+                @Override
+                public void onDoubleClick(View view) {
+                    likeList.set(position, true);
+                    holder.itemView.findViewById(R.id.iv_like).setVisibility(View.VISIBLE);
+                }
+            });
 
             holder.mp_video.setUp(urlList.get(position), JZVideoPlayerStandard.CURRENT_STATE_NORMAL);
             // 一开始播放第一个视频
-            if (position==0){
+            if (position == 0){
                 holder.mp_video.startVideo();
             }
 //            holder.mtextView.setText(urlList.get(position));
@@ -158,7 +195,7 @@ public class VideoFragment extends Fragment {
             View view = View.inflate(parent.getContext(), R.layout.layout_recycler_vedio, null);
 
             JZVideoPlayerStandard videoPlayer = view.findViewById(R.id.videoplayer);
-            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) videoPlayer.getLayoutParams();
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) videoPlayer.getLayoutParams();
             layoutParams.width = mwidth;
             layoutParams.height = mheight;
             videoPlayer.setLayoutParams(layoutParams);
@@ -182,13 +219,30 @@ public class VideoFragment extends Fragment {
         private JZVideoPlayerStandard mp_video;
 //        private TextView mtextView;
 
-
         public VideoViewHolder(View rootView) {
             super(rootView);
             this.mp_video = rootView.findViewById(R.id.videoplayer);
 //            this.mtextView = rootView.findViewById(R.id.videoplayer);
         }
 
+    }
+
+    public abstract static class OnDoubleClickListener implements View.OnClickListener {
+
+        long lastClickTime = 0;
+        static final int TIME_INTERVAL = 500;
+//        Handler handler = new Handler();
+
+        public abstract void onDoubleClick(View view);
+
+        @Override
+        public void onClick(View view) {
+            long clickTime = System.currentTimeMillis();
+            if (clickTime - lastClickTime < TIME_INTERVAL) {
+                onDoubleClick(view);
+            }
+            lastClickTime = clickTime;
+        }
     }
 
 }

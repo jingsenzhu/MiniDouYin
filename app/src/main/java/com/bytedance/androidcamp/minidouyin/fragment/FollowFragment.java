@@ -1,9 +1,11 @@
 package com.bytedance.androidcamp.minidouyin.fragment;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,7 +122,12 @@ public class FollowFragment extends Fragment {
                 i.putExtra("id", follow.followID);
                 i.putExtra("has_login", ((MainActivity)mContext).isHasLogin());
                 i.putExtra("follow_state", true);
-                ((Activity)mContext).startActivityForResult(i, MainActivity.USER_REQUEST_CODE);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    ((Activity)mContext).startActivityForResult(i, MainActivity.USER_REQUEST_CODE);
+                } else {
+                    ((Activity)mContext).startActivityForResult(i, MainActivity.USER_REQUEST_CODE,
+                            ActivityOptions.makeSceneTransitionAnimation((Activity)mContext, itemView.findViewById(R.id.civ_head), "shareUserHead").toBundle());
+                }
             });
             mFollowButton.setOnClickListener(view -> {
                 followState = !followState;
