@@ -21,12 +21,14 @@
             android:text="@string/recommend"
             android:textSize="18sp"
             android:textColor="#fffafafa"
+            android:alpha="0.8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/tv_discover"
             android:textSize="16sp"
             android:textColor="@android:color/secondary_text_dark"
+            android:alpha="0.8"
             android:text="@string/discover"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

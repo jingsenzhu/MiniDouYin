@@ -34,9 +34,11 @@ import com.bytedance.androidcamp.minidouyin.R;
 import com.bytedance.androidcamp.minidouyin.model.GetVideosResponse;
 import com.bytedance.androidcamp.minidouyin.model.IMiniDouyinService;
 import com.bytedance.androidcamp.minidouyin.model.Video;
+import com.bytedance.androidcamp.minidouyin.view.JZVideoPlayerStandardLoopVideo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import cn.jzvd.JZVideoPlayer;
 import cn.jzvd.JZVideoPlayerStandard;
@@ -82,7 +84,7 @@ public class VideoFragment extends Fragment {
 
     private void initView(View view){
 
-        view.findViewById(R.id.tv_discover).setOnClickListener(v -> ((MainActivity)getActivity()).goToDiscover());
+        view.findViewById(R.id.tv_discover).setOnClickListener(v -> ((MainActivity) Objects.requireNonNull(getActivity())).goToDiscover());
 
         mrvVideo = view.findViewById(R.id.rv_video);
 
@@ -244,7 +246,7 @@ public class VideoFragment extends Fragment {
         public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = View.inflate(parent.getContext(), R.layout.layout_recycler_vedio, null);
 
-            JZVideoPlayerStandard videoPlayer = view.findViewById(R.id.videoplayer);
+            JZVideoPlayerStandardLoopVideo videoPlayer = view.findViewById(R.id.videoplayer);
             ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) videoPlayer.getLayoutParams();
             layoutParams.width = mwidth;
             layoutParams.height = mheight;
@@ -266,7 +268,7 @@ public class VideoFragment extends Fragment {
 
     public class VideoViewHolder extends RecyclerView.ViewHolder {
 
-        private JZVideoPlayerStandard mp_video;
+        private JZVideoPlayerStandardLoopVideo mp_video;
 //        private TextView mtextView;
 
         public VideoViewHolder(View rootView) {

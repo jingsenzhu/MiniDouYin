@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.jzvd.JZVideoPlayerStandard
+    <com.bytedance.androidcamp.minidouyin.view.JZVideoPlayerStandardLoopVideo
         android:id="@+id/videoplayer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -17,6 +17,7 @@
         android:src="@drawable/ic_like"
         android:layout_margin="8dp"
         android:scaleType="centerInside"
+        android:alpha="0.65"
         app:layout_constraintBottom_toTopOf="@id/ib_comment"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="48dp"
@@ -38,6 +39,7 @@
         android:background="#0000"
         android:src="@drawable/ic_comment"
         android:scaleType="centerInside"
+        android:alpha="0.65"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -47,6 +49,7 @@
         android:layout_margin="8dp"
         android:background="#0000"
         android:layout_below="@id/ib_comment"
+        android:alpha="0.65"
         app:layout_constraintTop_toBottomOf="@id/ib_comment"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_share"
