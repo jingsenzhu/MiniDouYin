@@ -1,6 +1,8 @@
 package com.bytedance.androidcamp.minidouyin.fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,7 @@ import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bytedance.androidcamp.minidouyin.MainActivity;
 import com.bytedance.androidcamp.minidouyin.R;
+import com.bytedance.androidcamp.minidouyin.activity.UserActivity;
 import com.bytedance.androidcamp.minidouyin.model.GetVideosResponse;
 import com.bytedance.androidcamp.minidouyin.model.IMiniDouyinService;
 import com.bytedance.androidcamp.minidouyin.model.Video;
@@ -161,13 +165,7 @@ public class VideoFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        JZVideoPlayer.goOnPlayOnPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        JZVideoPlayer.goOnPlayOnResume();
+        JZVideoPlayer.releaseAllVideos();
     }
 
     class ListVideoAdapter extends RecyclerView.Adapter <VideoViewHolder> {
@@ -185,6 +183,25 @@ public class VideoFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, final int position) {
+
+            holder.itemView.findViewById(R.id.rl_author).setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), UserActivity.class);
+                intent.putExtra("username", urlList.get(position).getUserName());
+                intent.putExtra("id", urlList.get(position).getStudentId());
+                boolean hasLogin = ((MainActivity)getActivity()).isHasLogin();
+                intent.putExtra("has_login", hasLogin);
+                intent.putExtra("follow_state", ((MainActivity)getActivity()).checkFollowState(urlList.get(position).getUserName()));
+                if (hasLogin)
+                    ((Activity)getActivity()).startActivityForResult(intent, MainActivity.USER_REQUEST_CODE);
+                else
+                    getActivity().startActivity(intent);
+            });
+
+            TextView authorTextView = holder.itemView.findViewById(R.id.tv_author);
+            authorTextView.setText(urlList.get(position).getUserName());
+
+            TextView authorIDTextView = holder.itemView.findViewById(R.id.tv_author_id);
+            authorIDTextView.setText(urlList.get(position).getStudentId());
 
             ImageButton imageButton = holder.itemView.findViewById(R.id.b_like);
             imageButton.setOnClickListener(v -> {

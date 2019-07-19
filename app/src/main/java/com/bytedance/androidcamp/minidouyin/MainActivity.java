@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.jzvd.JZVideoPlayer;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final int LOGIN_REQUEST_CODE = 6342;
@@ -423,6 +425,7 @@ public class MainActivity extends AppCompatActivity {
                     findViewById(R.id.fab_add).startAnimation(alphaAnimation);
                     findViewById(R.id.fab_add).setVisibility(View.GONE);
                 } else {
+                    JZVideoPlayer.releaseAllVideos();
                     if (findViewById(R.id.tl_main).getVisibility() != View.VISIBLE) {
                         findViewById(R.id.tl_main).startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.tab_in));
                         findViewById(R.id.tl_main).setVisibility(View.VISIBLE);

@@ -17,7 +17,7 @@
         android:src="@drawable/ic_like"
         android:layout_margin="8dp"
         android:scaleType="centerInside"
-        android:alpha="0.65"
+        android:alpha="0.8"
         app:layout_constraintBottom_toTopOf="@id/ib_comment"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="48dp"
@@ -39,7 +39,7 @@
         android:background="#0000"
         android:src="@drawable/ic_comment"
         android:scaleType="centerInside"
-        android:alpha="0.65"
+        android:alpha="0.8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -49,12 +49,49 @@
         android:layout_margin="8dp"
         android:background="#0000"
         android:layout_below="@id/ib_comment"
-        android:alpha="0.65"
+        android:alpha="0.8"
         app:layout_constraintTop_toBottomOf="@id/ib_comment"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_share"
         android:scaleType="centerInside"
         android:layout_width="48dp"
         android:layout_height="48dp" />
+
+    <RelativeLayout
+        android:id="@+id/rl_author"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="64dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <com.bytedance.androidcamp.minidouyin.view.CircleImageView
+            android:id="@+id/iv_head"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/head" />
+        <TextView
+            android:id="@+id/tv_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@android:color/background_light"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@id/iv_head" />
+
+        <TextView
+            android:id="@+id/tv_author_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/secondary_text_dark"
+            android:layout_below="@id/tv_author"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@id/iv_head" />
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
