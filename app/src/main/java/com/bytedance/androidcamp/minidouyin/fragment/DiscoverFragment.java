@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.appcompat.view.menu.MenuView;
 import androidx.fragment.app.Fragment;
@@ -299,7 +300,6 @@ public class DiscoverFragment extends Fragment {
     public void postVideo(String userName, String userID, String videoPath) {
 
         Uri SelectedVideo = Uri.fromFile(new File(videoPath));
-        // TODO: we already have bitmap
         Bitmap bitmapSelectedImage = getVideoThumb(videoPath);
         File selectPictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
         if (selectPictureFile == null) {
@@ -330,7 +330,12 @@ public class DiscoverFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     PostVideoResponse postRes = response.body();
                     if (postRes.isSuccess()) {
-                        Toast.makeText( getActivity() , "upload successfully!", Toast.LENGTH_SHORT).show();
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("上传成功")
+                                .setPositiveButton("OK", (i, d) -> {})
+                                .create()
+                                .show();
+                        Toast.makeText( getActivity() , "上传成功", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.bytedance.androidcamp.minidouyin;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import android.app.ActionBar;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -82,29 +84,23 @@ public class MainActivity extends AppCompatActivity {
         if (mActionBar != null){
             mActionBar.hide();
         }
-        if (Utils.isPermissionsReady(MainActivity.this,permissions)) {
-
+        if (Utils.isPermissionsReady(MainActivity.this, permissions)) {
+            init();
         } else {
-            Utils.reuqestPermissions(MainActivity.this,permissions,REQUEST_EXTERNAL_STORAGE);
+            Utils.reuqestPermissions(MainActivity.this, permissions,REQUEST_EXTERNAL_STORAGE);
         }
+    }
 
-        LottieAnimationView animationView = findViewById(R.id.lav_loading);
-        animationView.addAnimatorListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                MainActivity.this.setContentView(R.layout.activity_main);
-                checkLogin();
-                initBtns();
-                initTab();
-                initDB();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for (int grantResult : grantResults) {
+            if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                finish();
+                return;
             }
-            @Override
-            public void onAnimationStart(Animator animator) {}
-            @Override
-            public void onAnimationCancel(Animator animator) {}
-            @Override
-            public void onAnimationRepeat(Animator animator) {}
-        });
+        }
+        init();
     }
 
     @Override
@@ -161,6 +157,10 @@ public class MainActivity extends AppCompatActivity {
                 ((DiscoverFragment)fragments.get(1)).postVideo(loginName, loginID,returnPath);
             }
         }
+        if (mViewPager.getAdapter() != null && mViewPager.getCurrentItem() == 0) {
+            findViewById(R.id.tl_main).setVisibility(View.GONE);
+            findViewById(R.id.fab_add).setVisibility(View.GONE);
+        }
     }
 
     public void updateFollow(boolean followState, Follow follow) {
@@ -190,6 +190,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private void init() {
+        LottieAnimationView animationView = findViewById(R.id.lav_loading);
+        animationView.addAnimatorListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                MainActivity.this.setContentView(R.layout.activity_main);
+                checkLogin();
+                initBtns();
+                initTab();
+                initDB();
+            }
+            @Override
+            public void onAnimationStart(Animator animator) {}
+            @Override
+            public void onAnimationCancel(Animator animator) {}
+            @Override
+            public void onAnimationRepeat(Animator animator) {}
+        });
     }
 
     private void initDB() {
@@ -341,6 +361,8 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.getAdapter().notifyDataSetChanged();
         writeLoginStatus();
         followList.clear();
+        findViewById(R.id.tl_main).setVisibility(View.GONE);
+        findViewById(R.id.fab_add).setVisibility(View.GONE);
     }
 
     private void initBtns() {

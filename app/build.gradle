@@ -19,6 +19,12 @@ android {
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
+    android.applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                outputFileName = "MiniDouYin.apk"
+            }
+    }
     buildTypes {
         release {
             minifyEnabled false
